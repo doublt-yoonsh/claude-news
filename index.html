@@ -4,43 +4,66 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Claude Code Daily Briefing</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-darklight-theme@3/dist/style.min.css">
+  <!-- Docsify default dark theme -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.min.css">
   <style>
     :root {
       --base-font-size: 15px;
-      --theme-color: #7c3aed;
+      --theme-color: #a78bfa;
+      --cover-background-color: #0f172a;
     }
-    .sidebar-nav li a {
-      font-size: 14px;
-    }
-    .markdown-section {
-      max-width: 800px;
-    }
-    /* Cover page styling */
+    /* Cover page */
     section.cover {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%) !important;
+      color: #f1f5f9 !important;
     }
     section.cover h1 {
-      border: none !important;
       color: #fff !important;
-      font-weight: 700;
+      border: none !important;
+      font-size: 2.5rem !important;
+      font-weight: 800 !important;
+      margin-bottom: 0.5rem !important;
+    }
+    section.cover blockquote {
+      border: none !important;
+      margin: 0 !important;
     }
     section.cover blockquote p {
       color: #cbd5e1 !important;
+      font-size: 1.2rem !important;
+    }
+    section.cover ul {
+      list-style: none !important;
+      padding: 0 !important;
     }
     section.cover ul li {
       color: #94a3b8 !important;
+      font-size: 1rem !important;
+      margin: 0.3rem 0 !important;
     }
     section.cover .cover-main > a:last-child {
+      display: inline-block !important;
       color: #fff !important;
-      border: 2px solid #7c3aed !important;
       background: #7c3aed !important;
-      border-radius: 2rem;
-      padding: 0.6rem 2rem;
+      border: none !important;
+      border-radius: 2rem !important;
+      padding: 0.75rem 2.5rem !important;
+      font-size: 1.1rem !important;
+      font-weight: 600 !important;
+      text-decoration: none !important;
+      margin-top: 1rem !important;
+      transition: background 0.2s !important;
     }
     section.cover .cover-main > a:last-child:hover {
       background: #6d28d9 !important;
-      border-color: #6d28d9 !important;
+    }
+    /* Sidebar */
+    .sidebar-nav li a {
+      font-size: 14px;
+    }
+    /* Content */
+    .markdown-section {
+      max-width: 800px;
     }
   </style>
 </head>
@@ -52,6 +75,7 @@
       repo: 'https://github.com/doublt-yoonsh/claude-news',
       loadSidebar: true,
       coverpage: true,
+      onlyCover: false,
       auto2top: true,
       subMaxLevel: 2,
       search: {
@@ -62,15 +86,11 @@
       pagination: {
         previousText: '이전',
         nextText: '다음'
-      },
-      formatUpdated: '{YYYY}-{MM}-{DD}',
+      }
     };
   </script>
-  <!-- Docsify core -->
   <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
-  <!-- Plugins -->
   <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/docsify-darklight-theme@3/dist/index.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/docsify-pagination@2/dist/docsify-pagination.min.js"></script>
 </body>
 </html>

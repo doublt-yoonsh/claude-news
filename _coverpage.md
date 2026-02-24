@@ -6,4 +6,4 @@
 - 최근 7일 이내 최신 정보만
 - 중복 없는 신선한 브리핑
 
-[브리핑 보기](briefings/briefing-2026-02-24.md)
+[브리핑 보기](#/briefings/briefing-2026-02-24)
