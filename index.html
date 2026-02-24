@@ -16,12 +16,31 @@
     .markdown-section {
       max-width: 800px;
     }
-    .cover-main {
-      color: #fff;
+    /* Cover page styling */
+    section.cover {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) !important;
     }
-    .cover-main a {
-      color: #fff;
-      border: 2px solid #fff;
+    section.cover h1 {
+      border: none !important;
+      color: #fff !important;
+      font-weight: 700;
+    }
+    section.cover blockquote p {
+      color: #cbd5e1 !important;
+    }
+    section.cover ul li {
+      color: #94a3b8 !important;
+    }
+    section.cover .cover-main > a:last-child {
+      color: #fff !important;
+      border: 2px solid #7c3aed !important;
+      background: #7c3aed !important;
+      border-radius: 2rem;
+      padding: 0.6rem 2rem;
+    }
+    section.cover .cover-main > a:last-child:hover {
+      background: #6d28d9 !important;
+      border-color: #6d28d9 !important;
     }
   </style>
 </head>
@@ -31,7 +50,6 @@
     window.$docsify = {
       name: 'Claude Code Daily Briefing',
       repo: 'https://github.com/doublt-yoonsh/claude-news',
-      basePath: '/claude-news/',
       loadSidebar: true,
       coverpage: true,
       auto2top: true,
