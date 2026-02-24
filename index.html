@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code Daily Briefing</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-darklight-theme@3/dist/style.min.css">
+  <style>
+    :root {
+      --base-font-size: 15px;
+      --theme-color: #7c3aed;
+    }
+    .sidebar-nav li a {
+      font-size: 14px;
+    }
+    .markdown-section {
+      max-width: 800px;
+    }
+    .cover-main {
+      color: #fff;
+    }
+    .cover-main a {
+      color: #fff;
+      border: 2px solid #fff;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">Loading...</div>
+  <script>
+    window.$docsify = {
+      name: 'Claude Code Daily Briefing',
+      repo: '',
+      loadSidebar: true,
+      coverpage: true,
+      auto2top: true,
+      subMaxLevel: 2,
+      search: {
+        placeholder: '검색...',
+        noData: '결과 없음',
+        paths: 'auto'
+      },
+      pagination: {
+        previousText: '이전',
+        nextText: '다음'
+      },
+      formatUpdated: '{YYYY}-{MM}-{DD}',
+    };
+  </script>
+  <!-- Docsify core -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+  <!-- Plugins -->
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-darklight-theme@3/dist/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-pagination@2/dist/docsify-pagination.min.js"></script>
+</body>
+</html>
