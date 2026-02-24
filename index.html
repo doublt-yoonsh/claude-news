@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Claude Code Daily Briefing</title>
-  <!-- Docsify default dark theme -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.min.css">
   <style>
     :root {
@@ -12,17 +11,26 @@
       --theme-color: #a78bfa;
       --cover-background-color: #0f172a;
     }
+
     /* Cover page */
     section.cover {
       background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%) !important;
+    }
+    section.cover .mask {
+      background: none !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+    section.cover .cover-main {
       color: #f1f5f9 !important;
+      z-index: 1;
+      position: relative;
     }
     section.cover h1 {
       color: #fff !important;
       border: none !important;
       font-size: 2.5rem !important;
       font-weight: 800 !important;
-      margin-bottom: 0.5rem !important;
     }
     section.cover blockquote {
       border: none !important;
@@ -41,7 +49,8 @@
       font-size: 1rem !important;
       margin: 0.3rem 0 !important;
     }
-    section.cover .cover-main > a:last-child {
+    /* Button - target <a> inside <p> */
+    section.cover p:last-child a {
       display: inline-block !important;
       color: #fff !important;
       background: #7c3aed !important;
@@ -52,19 +61,19 @@
       font-weight: 600 !important;
       text-decoration: none !important;
       margin-top: 1rem !important;
-      transition: background 0.2s !important;
+      cursor: pointer !important;
+      z-index: 10 !important;
+      position: relative !important;
     }
-    section.cover .cover-main > a:last-child:hover {
+    section.cover p:last-child a:hover {
       background: #6d28d9 !important;
     }
+
     /* Sidebar */
-    .sidebar-nav li a {
-      font-size: 14px;
-    }
+    .sidebar-nav li a { font-size: 14px; }
+
     /* Content */
-    .markdown-section {
-      max-width: 800px;
-    }
+    .markdown-section { max-width: 800px; }
   </style>
 </head>
 <body>
