@@ -97,6 +97,20 @@
         previousText: '이전',
         nextText: '다음'
       }
+      plugins: [
+        function(hook) {
+          hook.doneEach(function() {
+            var coverLink = document.querySelector('section.cover p:last-child a');
+            if (coverLink) {
+              coverLink.setAttribute('target', '_self');
+              coverLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.hash = '#/briefings/briefing-2026-02-24';
+              });
+            }
+          });
+        }
+      ]
     };
   </script>
   <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
