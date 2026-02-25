@@ -6,4 +6,4 @@
 - 최근 7일 이내 최신 정보만
 - 중복 없는 신선한 브리핑
 
-[최신 브리핑 보기](https://doublt-yoonsh.github.io/claude-news/#/briefings/briefing-2026-02-24)
+[최신 브리핑 보기](https://doublt-yoonsh.github.io/claude-news/#/briefings/briefing-2026-02-25)
