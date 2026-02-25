@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git fetch:*)",
+      "Bash(gh api:*)",
+      "WebFetch(domain:doublt-yoonsh.github.io)",
+      "WebSearch",
+      "WebFetch(domain:news.hada.io)"
+    ]
+  }
+}
