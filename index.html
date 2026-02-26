@@ -58,24 +58,43 @@
       font-size: 1rem !important;
       margin: 0.3rem 0 !important;
     }
-    /* Button - target <a> inside <p> */
+    /* Cover buttons */
     section.cover p:last-child a {
       display: inline-block !important;
       color: #fff !important;
       background: #7c3aed !important;
       border: none !important;
       border-radius: 2rem !important;
-      padding: 0.75rem 2.5rem !important;
-      font-size: 1.1rem !important;
+      padding: 0.75rem 2rem !important;
+      font-size: 1rem !important;
       font-weight: 600 !important;
       text-decoration: none !important;
-      margin-top: 1rem !important;
+      margin: 0.5rem 0.3rem !important;
       cursor: pointer !important;
       z-index: 10 !important;
       position: relative !important;
     }
     section.cover p:last-child a:hover {
       background: #6d28d9 !important;
+    }
+
+    /* Language switcher in sidebar */
+    .lang-switcher {
+      text-align: center;
+      padding: 10px 0 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 10px;
+    }
+    .lang-switcher a {
+      margin: 0 10px;
+      font-size: 20px;
+      text-decoration: none;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+    .lang-switcher a:hover,
+    .lang-switcher a.active {
+      opacity: 1;
     }
 
     /* Sidebar */
@@ -96,27 +115,51 @@
       onlyCover: true,
       auto2top: true,
       subMaxLevel: 2,
+      alias: {
+        '/en/.*/_sidebar.md': '/en/_sidebar.md',
+        '/ja/.*/_sidebar.md': '/ja/_sidebar.md'
+      },
       search: {
-        placeholder: '검색...',
-        noData: '결과 없음',
+        placeholder: 'Search...',
+        noData: 'No results',
         paths: 'auto',
         depth: 1
       },
       pagination: {
-        previousText: '최신',
-        nextText: '이전 브리핑'
+        previousText: 'Newer',
+        nextText: 'Older'
       },
       plugins: [
         function(hook) {
+          // Cover page link handler
           hook.ready(function() {
             document.addEventListener('click', function(e) {
               var link = e.target.closest('section.cover a');
               if (link) {
                 e.preventDefault();
                 e.stopPropagation();
-                window.location.hash = '#/briefings/briefing-2026-02-26';
+                var href = link.getAttribute('href');
+                if (href) {
+                  window.location.hash = '#/' + href;
+                }
               }
             }, true);
+          });
+
+          // Sidebar language switcher
+          hook.doneEach(function() {
+            var sidebar = document.querySelector('.sidebar-nav');
+            if (sidebar && !sidebar.querySelector('.lang-switcher')) {
+              var hash = window.location.hash || '';
+              var lang = hash.startsWith('#/en/') ? 'en' : hash.startsWith('#/ja/') ? 'ja' : 'ko';
+              var switcher = document.createElement('div');
+              switcher.className = 'lang-switcher';
+              switcher.innerHTML =
+                '<a href="#/"' + (lang === 'ko' ? ' class="active"' : '') + ' title="한국어">🇰🇷</a>' +
+                '<a href="#/en/"' + (lang === 'en' ? ' class="active"' : '') + ' title="English">🇺🇸</a>' +
+                '<a href="#/ja/"' + (lang === 'ja' ? ' class="active"' : '') + ' title="日本語">🇯🇵</a>';
+              sidebar.insertBefore(switcher, sidebar.firstChild);
+            }
           });
         }
       ]

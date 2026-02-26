@@ -4,6 +4,6 @@
 
 - 매일 자동 수집 & 정리
 - 최근 7일 이내 최신 정보만
-- 중복 없는 신선한 브리핑
+- 🇰🇷 한국어 · 🇺🇸 English · 🇯🇵 日本語
 
-[최신 브리핑 보기](https://doublt-yoonsh.github.io/claude-news/#/briefings/briefing-2026-02-26)
+[🇰🇷 한국어](briefings/briefing-2026-02-26)
