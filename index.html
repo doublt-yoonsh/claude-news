@@ -107,7 +107,22 @@
         previousText: 'Newer',
         nextText: 'Older'
       },
-      plugins: []
+      plugins: [
+        function(hook) {
+          hook.ready(function() {
+            document.addEventListener('click', function(e) {
+              var link = e.target.closest('section.cover a');
+              if (link) {
+                var href = link.getAttribute('href');
+                if (href && !href.startsWith('#') && !href.startsWith('http')) {
+                  e.preventDefault();
+                  window.location.hash = '#/' + href;
+                }
+              }
+            });
+          });
+        }
+      ]
     };
   </script>
   <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
