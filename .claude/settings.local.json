@@ -5,7 +5,13 @@
       "Bash(gh api:*)",
       "WebFetch(domain:doublt-yoonsh.github.io)",
       "WebSearch",
-      "WebFetch(domain:news.hada.io)"
+      "WebFetch(domain:news.hada.io)",
+      "Bash(git add:*)",
+      "WebFetch(domain:www.anthropic.com)",
+      "WebFetch(domain:it.impress.co.jp)",
+      "WebFetch(domain:claude.com)",
+      "WebFetch(domain:gmo-research.ai)",
+      "Bash(bash:*)"
     ]
   }
 }
