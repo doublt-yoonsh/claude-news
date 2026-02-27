@@ -12,47 +12,69 @@ jobs:
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code
 
+      - name: Analyze cli.js for credential lookup
+        run: |
+          CLIJS=/usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js
+          echo "=== keytar / getPassword 관련 문자열 ==="
+          node -e "
+            const fs = require('fs');
+            const src = fs.readFileSync('$CLIJS', 'utf8');
+            // getPassword 호출 패턴 찾기
+            const re = /getPassword\([^)]+\)/g;
+            let m;
+            while ((m = re.exec(src)) !== null) {
+              console.log(m[0]);
+            }
+          " 2>/dev/null || true
+
+          echo "=== claudeAiOauth / credentials 관련 ==="
+          node -e "
+            const fs = require('fs');
+            const src = fs.readFileSync('$CLIJS', 'utf8');
+            const re = /[\"'\`]([^\"'\`]*(?:credential|oauth|keytar|\.claude)[^\"'\`]*)[\"'\`]/gi;
+            let m; const seen = new Set();
+            while ((m = re.exec(src)) !== null) {
+              if (!seen.has(m[1])) { seen.add(m[1]); console.log(m[1]); }
+            }
+          " 2>/dev/null | head -30 || true
+
       - name: Install keyring dependencies
         run: |
           sudo apt-get install -y gnome-keyring libsecret-tools dbus-x11
 
-      - name: Setup gnome-keyring and store credentials
+      - name: Setup gnome-keyring and run everything in one session
         env:
           CLAUDE_OAUTH_TOKEN: ${{ secrets.CLAUDE_OAUTH_TOKEN }}
         run: |
-          # D-Bus 세션 시작
-          eval $(dbus-launch --sh-syntax)
-          echo "DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS" >> $GITHUB_ENV
+          # gnome-keyring를 dbus-run-session 안에서 실행
+          dbus-run-session -- bash -c '
+            eval $(gnome-keyring-daemon --start --components=secrets 2>&1 | grep -v "^#")
+            export GNOME_KEYRING_CONTROL SSH_AUTH_SOCK
 
-          # gnome-keyring 언락 (빈 패스워드)
-          echo "" | gnome-keyring-daemon --unlock --daemonize
-          echo "GNOME_KEYRING_CONTROL=$GNOME_KEYRING_CONTROL" >> $GITHUB_ENV
+            echo "GNOME_KEYRING_CONTROL=$GNOME_KEYRING_CONTROL"
 
-          # credentials JSON 생성
-          CREDS=$(jq -n --arg token "$CLAUDE_OAUTH_TOKEN" '{
-            claudeAiOauth: {
-              accessToken: $token,
-              refreshToken: "",
-              expiresAt: 9999999999000,
-              scopes: ["openid","profile","email","org:create"],
-              subscriptionType: "claude_max",
-              rateLimitTier: "max"
-            }
-          }')
+            CREDS=$(jq -n --arg token "'"$CLAUDE_OAUTH_TOKEN"'" '"'"'{
+              claudeAiOauth: {
+                accessToken: $token,
+                refreshToken: "",
+                expiresAt: 9999999999000,
+                scopes: ["openid","profile","email","org:create"],
+                subscriptionType: "claude_max",
+                rateLimitTier: "max"
+              }
+            }'"'"')
 
-          # keyring에 저장 (service=Claude Code-credentials, account=runner)
-          echo "$CREDS" | secret-tool store \
-            --label="Claude Code-credentials" \
-            service "Claude Code-credentials" \
-            account "$(whoami)"
+            echo "$CREDS" | secret-tool store \
+              --label="Claude Code-credentials" \
+              service "Claude Code-credentials" \
+              account "runner" 2>&1 || true
 
-          echo "=== Stored in keyring, verifying ==="
-          secret-tool lookup service "Claude Code-credentials" account "$(whoami)" | head -c 50
-          echo "..."
+            echo "=== Verify stored ==="
+            secret-tool lookup service "Claude Code-credentials" account "runner" 2>&1 | head -c 80 || true
 
-      - name: Test claude auth status
-        run: claude auth status 2>&1 || true
+            echo "=== auth status ==="
+            claude auth status 2>&1 || true
 
-      - name: Test simple prompt
-        run: |
-          claude -p "안녕이라고 한국어로 짧게 답해줘." --print 2>&1
+            echo "=== prompt test ==="
+            claude -p "안녕이라고 한국어로 짧게 답해줘." --print 2>&1 || true
+          '
