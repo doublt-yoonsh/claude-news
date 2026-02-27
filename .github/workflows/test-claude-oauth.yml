@@ -27,31 +27,9 @@ jobs:
             }
           }')
 
-          cat > /tmp/keytar-preload.js << 'JSEOF'
-const Module = require('module');
-const orig = Module._load;
-Module._load = function(request, parent, isMain) {
-  if (request === 'keytar') {
-    const creds = process.env._CLAUDE_CREDS;
-    process.stderr.write('[mock-keytar] loaded\n');
-    return {
-      getPassword: async (service, account) => {
-        process.stderr.write('[mock-keytar] getPassword: ' + service + ' / ' + account + '\n');
-        if (service === 'Claude Code-credentials' && creds) return creds;
-        return null;
-      },
-      setPassword: async () => {},
-      deletePassword: async () => false,
-      findCredentials: async () => [],
-    };
-  }
-  return orig.apply(this, arguments);
-};
-JSEOF
-
           echo "=== auth status (NODE_OPTIONS preload) ==="
-          NODE_OPTIONS="--require /tmp/keytar-preload.js" _CLAUDE_CREDS="$CREDS" claude auth status 2>&1 || true
+          NODE_OPTIONS="--require $PWD/scripts/keytar-preload.js" _CLAUDE_CREDS="$CREDS" claude auth status 2>&1 || true
 
           echo "=== prompt test (NODE_OPTIONS preload) ==="
-          NODE_OPTIONS="--require /tmp/keytar-preload.js" _CLAUDE_CREDS="$CREDS" \
+          NODE_OPTIONS="--require $PWD/scripts/keytar-preload.js" _CLAUDE_CREDS="$CREDS" \
             claude -p "안녕이라고 한국어로 짧게 답해줘." --print 2>&1 || true
