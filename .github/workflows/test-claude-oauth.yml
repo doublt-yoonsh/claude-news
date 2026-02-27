@@ -12,25 +12,10 @@ jobs:
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code
 
-      - name: Find keytar location
-        run: |
-          echo "=== keytar in claude-code package ==="
-          find /usr/local/lib/node_modules/@anthropic-ai/claude-code -name "keytar*" 2>/dev/null || true
-          find /usr/local/lib/node_modules -maxdepth 3 -name "keytar*" 2>/dev/null || true
-
-          echo "=== Node.js keytar resolution ==="
-          node -e "
-            try {
-              const k = require.resolve('keytar', {paths: ['/usr/local/lib/node_modules/@anthropic-ai/claude-code']});
-              console.log('keytar resolved to:', k);
-            } catch(e) { console.log('keytar resolve error:', e.message); }
-          " 2>/dev/null || true
-
-      - name: Mock keytar and test
+      - name: Inject mock keytar via NODE_OPTIONS preload
         env:
           CLAUDE_OAUTH_TOKEN: ${{ secrets.CLAUDE_OAUTH_TOKEN }}
         run: |
-          # credentials JSON 생성
           CREDS=$(jq -n --arg token "$CLAUDE_OAUTH_TOKEN" '{
             claudeAiOauth: {
               accessToken: $token,
@@ -42,32 +27,31 @@ jobs:
             }
           }')
 
-          # keytar mock 모듈 생성
-          KEYTAR_DIR=/usr/local/lib/node_modules/keytar
-          sudo mkdir -p $KEYTAR_DIR
+          cat > /tmp/keytar-preload.js << 'JSEOF'
+const Module = require('module');
+const orig = Module._load;
+Module._load = function(request, parent, isMain) {
+  if (request === 'keytar') {
+    const creds = process.env._CLAUDE_CREDS;
+    process.stderr.write('[mock-keytar] loaded\n');
+    return {
+      getPassword: async (service, account) => {
+        process.stderr.write('[mock-keytar] getPassword: ' + service + ' / ' + account + '\n');
+        if (service === 'Claude Code-credentials' && creds) return creds;
+        return null;
+      },
+      setPassword: async () => {},
+      deletePassword: async () => false,
+      findCredentials: async () => [],
+    };
+  }
+  return orig.apply(this, arguments);
+};
+JSEOF
 
-          sudo tee $KEYTAR_DIR/index.js > /dev/null <<'JSEOF'
-          const creds = process.env._CLAUDE_MOCK_CREDS;
-          module.exports = {
-            getPassword: async (service, account) => {
-              console.error('[mock-keytar] getPassword:', service, account);
-              if (service === 'Claude Code-credentials' && creds) return creds;
-              return null;
-            },
-            setPassword: async () => {},
-            deletePassword: async () => { return false; },
-          };
-          JSEOF
+          echo "=== auth status (NODE_OPTIONS preload) ==="
+          NODE_OPTIONS="--require /tmp/keytar-preload.js" _CLAUDE_CREDS="$CREDS" claude auth status 2>&1 || true
 
-          sudo tee $KEYTAR_DIR/package.json > /dev/null <<'JSONEOF'
-          {"name":"keytar","version":"7.9.0","main":"index.js"}
-          JSONEOF
-
-          echo "=== mock keytar created ==="
-          cat $KEYTAR_DIR/index.js
-
-          echo "=== auth status with mock ==="
-          _CLAUDE_MOCK_CREDS="$CREDS" claude auth status 2>&1 || true
-
-          echo "=== prompt test with mock ==="
-          _CLAUDE_MOCK_CREDS="$CREDS" claude -p "안녕이라고 한국어로 짧게 답해줘." --print 2>&1 || true
+          echo "=== prompt test (NODE_OPTIONS preload) ==="
+          NODE_OPTIONS="--require /tmp/keytar-preload.js" _CLAUDE_CREDS="$CREDS" \
+            claude -p "안녕이라고 한국어로 짧게 답해줘." --print 2>&1 || true
