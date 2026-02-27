@@ -11,7 +11,19 @@
       "WebFetch(domain:it.impress.co.jp)",
       "WebFetch(domain:claude.com)",
       "WebFetch(domain:gmo-research.ai)",
-      "Bash(bash:*)"
+      "Bash(bash:*)",
+      "Bash(git push:*)",
+      "Bash(gh secret:*)",
+      "Bash(gh run:*)",
+      "Bash(gh workflow:*)",
+      "Bash(ls:*)",
+      "Bash(echo Not found in keychain by simple search:*)",
+      "Bash(claude setup-token:*)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(list\\(d.keys\\(\\)\\)\\)\")",
+      "Bash(env | grep -i \"claude\\\\|anthropic\" 2>/dev/null)",
+      "Bash(claude auth:*)",
+      "Bash(node:*)",
+      "Bash(security find-generic-password:*)"
     ]
   }
 }
