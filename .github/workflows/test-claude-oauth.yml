@@ -12,69 +12,61 @@ jobs:
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code
 
-      - name: Analyze cli.js for credential lookup
+      - name: Find oauth-fd flag in cli.js
         run: |
           CLIJS=/usr/local/lib/node_modules/@anthropic-ai/claude-code/cli.js
-          echo "=== keytar / getPassword 관련 문자열 ==="
+          echo "=== oauth-token-fd / oauthTokenFromFd 관련 ==="
           node -e "
             const fs = require('fs');
             const src = fs.readFileSync('$CLIJS', 'utf8');
-            // getPassword 호출 패턴 찾기
-            const re = /getPassword\([^)]+\)/g;
-            let m;
-            while ((m = re.exec(src)) !== null) {
-              console.log(m[0]);
+            // oauthTokenFromFd 주변 컨텍스트 찾기
+            const idx = src.indexOf('oauthTokenFromFd');
+            if (idx > -1) {
+              // 100자 앞뒤 출력
+              for (let i = 0; i < 5; i++) {
+                const pos = src.indexOf('oauthTokenFromFd', idx + (i > 0 ? 1 : 0));
+                if (pos > -1) console.log(src.slice(Math.max(0,pos-150), pos+150));
+              }
             }
-          " 2>/dev/null || true
+          " 2>/dev/null | head -60 || true
 
-          echo "=== claudeAiOauth / credentials 관련 ==="
+          echo "=== CLAUDE_CONFIG_DIR 관련 ==="
           node -e "
             const fs = require('fs');
             const src = fs.readFileSync('$CLIJS', 'utf8');
-            const re = /[\"'\`]([^\"'\`]*(?:credential|oauth|keytar|\.claude)[^\"'\`]*)[\"'\`]/gi;
-            let m; const seen = new Set();
-            while ((m = re.exec(src)) !== null) {
-              if (!seen.has(m[1])) { seen.add(m[1]); console.log(m[1]); }
-            }
-          " 2>/dev/null | head -30 || true
+            const idx = src.indexOf('CLAUDE_CONFIG_DIR');
+            if (idx > -1) console.log(src.slice(Math.max(0,idx-100), idx+200));
+          " 2>/dev/null | head -20 || true
 
-      - name: Install keyring dependencies
-        run: |
-          sudo apt-get install -y gnome-keyring libsecret-tools dbus-x11
-
-      - name: Setup gnome-keyring and run everything in one session
+      - name: Try oauth-token-fd approach
         env:
           CLAUDE_OAUTH_TOKEN: ${{ secrets.CLAUDE_OAUTH_TOKEN }}
         run: |
-          # gnome-keyring를 dbus-run-session 안에서 실행
-          dbus-run-session -- bash -c '
-            eval $(gnome-keyring-daemon --start --components=secrets 2>&1 | grep -v "^#")
-            export GNOME_KEYRING_CONTROL SSH_AUTH_SOCK
+          echo "=== claude --help | grep oauth ==="
+          claude --help 2>&1 | grep -i oauth || true
 
-            echo "GNOME_KEYRING_CONTROL=$GNOME_KEYRING_CONTROL"
+          echo "=== Try passing token via fd ==="
+          # 파일 디스크립터 3에 토큰을 넣고 --oauth-token-fd 3 시도
+          claude -p "안녕이라고 짧게 답해줘." --print --oauth-token-fd 3 2>&1 3< <(echo "$CLAUDE_OAUTH_TOKEN") || true
 
-            CREDS=$(jq -n --arg token "'"$CLAUDE_OAUTH_TOKEN"'" '"'"'{
-              claudeAiOauth: {
-                accessToken: $token,
-                refreshToken: "",
-                expiresAt: 9999999999000,
-                scopes: ["openid","profile","email","org:create"],
-                subscriptionType: "claude_max",
-                rateLimitTier: "max"
-              }
-            }'"'"')
+      - name: Try CLAUDE_CONFIG_DIR approach
+        env:
+          CLAUDE_OAUTH_TOKEN: ${{ secrets.CLAUDE_OAUTH_TOKEN }}
+        run: |
+          mkdir -p /tmp/claude-config
+          jq -n --arg token "$CLAUDE_OAUTH_TOKEN" '{
+            claudeAiOauth: {
+              accessToken: $token,
+              refreshToken: "",
+              expiresAt: 9999999999000,
+              scopes: ["openid","profile","email","org:create"],
+              subscriptionType: "claude_max",
+              rateLimitTier: "max"
+            }
+          }' > /tmp/claude-config/.credentials.json
 
-            echo "$CREDS" | secret-tool store \
-              --label="Claude Code-credentials" \
-              service "Claude Code-credentials" \
-              account "runner" 2>&1 || true
+          echo "=== auth status with CLAUDE_CONFIG_DIR ==="
+          CLAUDE_CONFIG_DIR=/tmp/claude-config claude auth status 2>&1 || true
 
-            echo "=== Verify stored ==="
-            secret-tool lookup service "Claude Code-credentials" account "runner" 2>&1 | head -c 80 || true
-
-            echo "=== auth status ==="
-            claude auth status 2>&1 || true
-
-            echo "=== prompt test ==="
-            claude -p "안녕이라고 한국어로 짧게 답해줘." --print 2>&1 || true
-          '
+          echo "=== prompt with CLAUDE_CONFIG_DIR ==="
+          CLAUDE_CONFIG_DIR=/tmp/claude-config claude -p "안녕이라고 짧게 답해줘." --print 2>&1 || true
