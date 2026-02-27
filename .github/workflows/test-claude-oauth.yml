@@ -17,22 +17,24 @@ jobs:
           CLAUDE_OAUTH_TOKEN: ${{ secrets.CLAUDE_OAUTH_TOKEN }}
         run: |
           mkdir -p ~/.claude
-          cat > ~/.claude/.credentials.json <<EOF
-          {
-            "claudeAiOauth": {
-              "accessToken": "${CLAUDE_OAUTH_TOKEN}",
-              "refreshToken": "",
-              "expiresAt": 9999999999000,
-              "scopes": ["openid", "profile", "email", "org:create"],
-              "subscriptionType": "claude_max",
-              "rateLimitTier": "max"
+          jq -n --arg token "$CLAUDE_OAUTH_TOKEN" '{
+            claudeAiOauth: {
+              accessToken: $token,
+              refreshToken: "",
+              expiresAt: 9999999999000,
+              scopes: ["openid","profile","email","org:create"],
+              subscriptionType: "claude_max",
+              rateLimitTier: "max"
             }
-          }
-          EOF
+          }' > ~/.claude/.credentials.json
+          echo "=== credentials.json ==="
+          cat ~/.claude/.credentials.json | jq 'del(.claudeAiOauth.accessToken) + {claudeAiOauth: (.claudeAiOauth + {accessToken: "REDACTED"})}'
 
       - name: Test claude auth status
         run: claude auth status 2>&1 || true
 
-      - name: Test simple prompt
+      - name: Test simple prompt (env var fallback)
+        env:
+          ANTHROPIC_AUTH_TOKEN: ${{ secrets.CLAUDE_OAUTH_TOKEN }}
         run: |
-          claude -p "오늘 날짜가 2026년 2월 27일이야. 안녕이라고 한국어로 짧게 답해줘." --print 2>&1
+          claude -p "안녕이라고 한국어로 짧게 답해줘." --print 2>&1
