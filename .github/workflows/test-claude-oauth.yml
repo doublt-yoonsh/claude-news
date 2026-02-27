@@ -12,11 +12,33 @@ jobs:
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code
 
+      - name: Inspect Claude Code credential handling
+        run: |
+          CLAUDE_PKG=$(npm root -g)/@anthropic-ai/claude-code
+          echo "=== Package location: $CLAUDE_PKG ==="
+          echo "=== Files mentioning credentials/keytar/oauth ==="
+          grep -rl "credentials\|keytar\|\.claude\|oAuth\|oauth" "$CLAUDE_PKG" --include="*.js" 2>/dev/null | head -10
+          echo "=== HOME ==="
+          echo $HOME
+          echo "=== whoami ==="
+          whoami
+
+      - name: Find credential file path from source
+        run: |
+          CLAUDE_PKG=$(npm root -g)/@anthropic-ai/claude-code
+          # credentials 저장 경로 찾기
+          grep -r "credentials\|\.claude" "$CLAUDE_PKG" --include="*.js" -l 2>/dev/null | \
+            xargs grep -h "credentials" 2>/dev/null | \
+            grep -v "^//" | grep "path\|join\|home\|\.claude" | sort -u | head -20
+
       - name: Setup credentials
         env:
           CLAUDE_OAUTH_TOKEN: ${{ secrets.CLAUDE_OAUTH_TOKEN }}
         run: |
+          # 여러 가능한 경로에 동시에 써보기
           mkdir -p ~/.claude
+          mkdir -p ~/.config/claude
+
           jq -n --arg token "$CLAUDE_OAUTH_TOKEN" '{
             claudeAiOauth: {
               accessToken: $token,
@@ -26,15 +48,17 @@ jobs:
               subscriptionType: "claude_max",
               rateLimitTier: "max"
             }
-          }' > ~/.claude/.credentials.json
-          echo "=== credentials.json ==="
-          cat ~/.claude/.credentials.json | jq 'del(.claudeAiOauth.accessToken) + {claudeAiOauth: (.claudeAiOauth + {accessToken: "REDACTED"})}'
+          }' > /tmp/creds.json
+
+          cp /tmp/creds.json ~/.claude/.credentials.json
+          cp /tmp/creds.json ~/.config/claude/.credentials.json
+
+          echo "=== Written to ~/.claude/.credentials.json ==="
+          ls -la ~/.claude/
 
       - name: Test claude auth status
         run: claude auth status 2>&1 || true
 
-      - name: Test simple prompt (env var fallback)
-        env:
-          ANTHROPIC_AUTH_TOKEN: ${{ secrets.CLAUDE_OAUTH_TOKEN }}
+      - name: Test simple prompt
         run: |
           claude -p "안녕이라고 한국어로 짧게 답해줘." --print 2>&1
