@@ -12,34 +12,24 @@ jobs:
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code
 
-      - name: Inspect Claude Code credential handling
+      - name: Install keyring dependencies
         run: |
-          CLAUDE_PKG=$(npm root -g)/@anthropic-ai/claude-code
-          echo "=== Package location: $CLAUDE_PKG ==="
-          echo "=== Files mentioning credentials/keytar/oauth ==="
-          grep -rl "credentials\|keytar\|\.claude\|oAuth\|oauth" "$CLAUDE_PKG" --include="*.js" 2>/dev/null | head -10
-          echo "=== HOME ==="
-          echo $HOME
-          echo "=== whoami ==="
-          whoami
+          sudo apt-get install -y gnome-keyring libsecret-tools dbus-x11
 
-      - name: Find credential file path from source
-        run: |
-          CLAUDE_PKG=$(npm root -g)/@anthropic-ai/claude-code
-          # credentials 저장 경로 찾기
-          grep -r "credentials\|\.claude" "$CLAUDE_PKG" --include="*.js" -l 2>/dev/null | \
-            xargs grep -h "credentials" 2>/dev/null | \
-            grep -v "^//" | grep "path\|join\|home\|\.claude" | sort -u | head -20
-
-      - name: Setup credentials
+      - name: Setup gnome-keyring and store credentials
         env:
           CLAUDE_OAUTH_TOKEN: ${{ secrets.CLAUDE_OAUTH_TOKEN }}
         run: |
-          # 여러 가능한 경로에 동시에 써보기
-          mkdir -p ~/.claude
-          mkdir -p ~/.config/claude
+          # D-Bus 세션 시작
+          eval $(dbus-launch --sh-syntax)
+          echo "DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS" >> $GITHUB_ENV
 
-          jq -n --arg token "$CLAUDE_OAUTH_TOKEN" '{
+          # gnome-keyring 언락 (빈 패스워드)
+          echo "" | gnome-keyring-daemon --unlock --daemonize
+          echo "GNOME_KEYRING_CONTROL=$GNOME_KEYRING_CONTROL" >> $GITHUB_ENV
+
+          # credentials JSON 생성
+          CREDS=$(jq -n --arg token "$CLAUDE_OAUTH_TOKEN" '{
             claudeAiOauth: {
               accessToken: $token,
               refreshToken: "",
@@ -48,13 +38,17 @@ jobs:
               subscriptionType: "claude_max",
               rateLimitTier: "max"
             }
-          }' > /tmp/creds.json
+          }')
 
-          cp /tmp/creds.json ~/.claude/.credentials.json
-          cp /tmp/creds.json ~/.config/claude/.credentials.json
+          # keyring에 저장 (service=Claude Code-credentials, account=runner)
+          echo "$CREDS" | secret-tool store \
+            --label="Claude Code-credentials" \
+            service "Claude Code-credentials" \
+            account "$(whoami)"
 
-          echo "=== Written to ~/.claude/.credentials.json ==="
-          ls -la ~/.claude/
+          echo "=== Stored in keyring, verifying ==="
+          secret-tool lookup service "Claude Code-credentials" account "$(whoami)" | head -c 50
+          echo "..."
 
       - name: Test claude auth status
         run: claude auth status 2>&1 || true
