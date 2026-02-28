@@ -23,7 +23,11 @@
       "Bash(env | grep -i \"claude\\\\|anthropic\" 2>/dev/null)",
       "Bash(claude auth:*)",
       "Bash(node:*)",
-      "Bash(security find-generic-password:*)"
+      "Bash(security find-generic-password:*)",
+      "Bash(git commit:*)",
+      "Bash(gh:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:docs.github.com)"
     ]
   }
 }
