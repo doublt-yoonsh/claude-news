@@ -1,11 +1,11 @@
 # Claude Code Daily Briefing
 
-> Claude Code 최신 팁, 보안 이슈, 커뮤니티 뉴스를 매일 정리합니다.
+> AI 뉴스 브리핑 / AI News Briefing / AI ニュースブリーフィング
 
-- 매일 자동 수집 & 정리
-- 최근 7일 이내 최신 정보만
-- 🇰🇷 한국어 · 🇺🇸 English · 🇯🇵 日本語
+- Updated daily at 10:00 AM KST
+- 매일 오전 10시 자동 발행
+- 毎朝10時（KST）自動配信
 
-[🇰🇷 한국어](briefings/briefing-2026-02-28)
-[🇺🇸 English](en/briefings/briefing-2026-02-28)
-[🇯🇵 日本語](ja/briefings/briefing-2026-02-28)
+[한국어](briefings/briefing-2026-02-28)
+[English](en/briefings/briefing-2026-02-28)
+[日本語](ja/briefings/briefing-2026-02-28)

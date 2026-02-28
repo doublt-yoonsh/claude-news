@@ -1,4 +1,5 @@
-* [Home](/)
+* **KO** | [EN](/en/) | [JA](/ja/)
+* ---
 * **2026-02**
   * [02-28](briefings/briefing-2026-02-28.md)
   * [02-27](briefings/briefing-2026-02-27.md)
