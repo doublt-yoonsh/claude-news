@@ -1,2 +1,5 @@
 .DS_Store
 .omc/
+.env
+docs/briefing-prompt.md
+publish.sh
