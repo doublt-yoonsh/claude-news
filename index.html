@@ -110,6 +110,7 @@
       plugins: [
         function(hook) {
           hook.ready(function() {
+            // Cover page button click handler
             document.addEventListener('click', function(e) {
               var link = e.target.closest('section.cover a');
               if (link) {
@@ -120,6 +121,27 @@
                 }
               }
             });
+
+            // Save language preference on navigation
+            window.addEventListener('hashchange', function() {
+              var hash = window.location.hash;
+              if (hash.startsWith('#/en/')) localStorage.setItem('claude-news-lang', 'en');
+              else if (hash.startsWith('#/ja/')) localStorage.setItem('claude-news-lang', 'ja');
+              else if (hash.startsWith('#/briefings/') || hash === '#/') localStorage.setItem('claude-news-lang', 'ko');
+            });
+
+            // Redirect returning users to their saved language
+            var saved = localStorage.getItem('claude-news-lang');
+            var hash = window.location.hash;
+            if (saved && (hash === '' || hash === '#/' || hash === '#')) {
+              var latestDate = 'briefing-2026-02-28';
+              var paths = {
+                ko: '#/briefings/' + latestDate,
+                en: '#/en/briefings/' + latestDate,
+                ja: '#/ja/briefings/' + latestDate
+              };
+              window.location.hash = paths[saved];
+            }
           });
         }
       ]
