@@ -28,7 +28,13 @@
       "Bash(gh:*)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:docs.github.com)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "WebFetch(domain:evilmartians.com)",
+      "WebFetch(domain:www.smashingmagazine.com)",
+      "WebFetch(domain:www.linguise.com)",
+      "WebFetch(domain:www3.nhk.or.jp)",
+      "WebFetch(domain:docsify.js.org)",
+      "WebFetch(domain:simplelocalize.io)"
     ]
   }
 }
