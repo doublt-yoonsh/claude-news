@@ -125,20 +125,23 @@
         function(hook) {
           // Inject language switcher into sidebar
           hook.doneEach(function() {
-            var nav = document.querySelector('.sidebar-nav');
-            if (nav && !nav.querySelector('.lang-switcher')) {
-              var hash = window.location.hash || '';
-              var isEn = hash.startsWith('#/en/');
-              var isJa = hash.startsWith('#/ja/');
-              var div = document.createElement('div');
-              div.className = 'lang-switcher';
-              div.innerHTML = (isEn || isJa ? '<a href="#/">KO</a>' : '<strong>KO</strong>')
-                + ' · '
-                + (isEn ? '<strong>EN</strong>' : '<a href="#/en/">EN</a>')
-                + ' · '
-                + (isJa ? '<strong>JA</strong>' : '<a href="#/ja/">JA</a>');
-              nav.parentNode.insertBefore(div, nav);
-            }
+            var sidebar = document.querySelector('.sidebar');
+            if (!sidebar) return;
+            var existing = sidebar.querySelector('.lang-switcher');
+            if (existing) existing.remove();
+            var nav = sidebar.querySelector('.sidebar-nav');
+            if (!nav) return;
+            var hash = window.location.hash || '';
+            var isEn = hash.startsWith('#/en/');
+            var isJa = hash.startsWith('#/ja/');
+            var div = document.createElement('div');
+            div.className = 'lang-switcher';
+            div.innerHTML = (isEn || isJa ? '<a href="#/">KO</a>' : '<strong>KO</strong>')
+              + ' · '
+              + (isEn ? '<strong>EN</strong>' : '<a href="#/en/">EN</a>')
+              + ' · '
+              + (isJa ? '<strong>JA</strong>' : '<a href="#/ja/">JA</a>');
+            nav.parentNode.insertBefore(div, nav);
           });
 
           hook.ready(function() {
