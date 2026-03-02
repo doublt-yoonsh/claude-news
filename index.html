@@ -80,6 +80,20 @@
 
     /* Sidebar */
     .sidebar-nav li a { font-size: 14px; }
+    .lang-switcher {
+      text-align: center;
+      padding: 8px 0 12px;
+      font-size: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 8px;
+    }
+    .lang-switcher a {
+      color: #a78bfa;
+      text-decoration: none;
+      margin: 0 6px;
+    }
+    .lang-switcher a:hover { text-decoration: underline; }
+    .lang-switcher strong { color: #fff; margin: 0 6px; }
 
     /* Content */
     .markdown-section { max-width: 800px; }
@@ -109,6 +123,24 @@
       },
       plugins: [
         function(hook) {
+          // Inject language switcher into sidebar
+          hook.doneEach(function() {
+            var nav = document.querySelector('.sidebar-nav');
+            if (nav && !nav.querySelector('.lang-switcher')) {
+              var hash = window.location.hash || '';
+              var isEn = hash.startsWith('#/en/');
+              var isJa = hash.startsWith('#/ja/');
+              var div = document.createElement('div');
+              div.className = 'lang-switcher';
+              div.innerHTML = (isEn || isJa ? '<a href="#/">KO</a>' : '<strong>KO</strong>')
+                + ' · '
+                + (isEn ? '<strong>EN</strong>' : '<a href="#/en/">EN</a>')
+                + ' · '
+                + (isJa ? '<strong>JA</strong>' : '<a href="#/ja/">JA</a>');
+              nav.parentNode.insertBefore(div, nav);
+            }
+          });
+
           hook.ready(function() {
             // Cover page button click handler
             document.addEventListener('click', function(e) {
