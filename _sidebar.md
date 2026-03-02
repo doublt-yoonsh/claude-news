@@ -1,5 +1,3 @@
-<p style="text-align:center;padding:4px 0;font-size:14px"><strong>KO</strong> · <a href="#/en/">EN</a> · <a href="#/ja/">JA</a></p>
-
 * **2026-03**
   * [03-02](briefings/briefing-2026-03-02.md)
   * [03-01](briefings/briefing-2026-03-01.md)
