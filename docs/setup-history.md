@@ -4,8 +4,8 @@
 
 Claude Code 관련 최신 정보를 매일 자동으로 수집하여 GitHub Pages로 공개하는 브리핑 사이트.
 
-- **사이트**: https://doublt-yoonsh.github.io/claude-news/
-- **레포**: https://github.com/doublt-yoonsh/claude-news
+- **사이트**: https://claude-news.today/
+- **레포**: (private)
 - **자동화**: runCLAUDErun (macOS 앱)으로 매일 스케줄 실행
 
 ## 아키텍처
@@ -85,7 +85,7 @@ claude-news/
 | 3 | runCLAUDErun 프롬프트 초안 작성 | 웹 검색 → md 저장 구조 |
 | 4 | 첫 브리핑 생성 (briefing-2026-02-24.md) | runCLAUDErun으로 실행 |
 | 5 | Docsify + GitHub Pages 사이트 구축 | 빌드 없는 정적 사이트 |
-| 6 | GitHub 레포 생성 + Pages 활성화 | doublt-yoonsh/claude-news |
+| 6 | GitHub 레포 생성 + Pages 활성화 | GitHub Pages + 커스텀 도메인 |
 | 7 | 커버페이지 디자인 수정 | 다크 테마, 가독성 개선 |
 | 8 | 버튼 클릭 이슈 수정 (3회) | CSS 선택자 → 절대 URL → 이벤트 캡처 |
 | 9 | 검색 결과에 날짜 표시 | search depth: 1 |

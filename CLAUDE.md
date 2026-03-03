@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Claude News is an automated daily briefing system that collects, summarizes, and publishes Claude Code / Anthropic news in three languages (Korean, English, Japanese). It runs as a zero-build Docsify static site hosted on GitHub Pages.
 
-**Live site:** https://doublt-yoonsh.github.io/claude-news/
+**Live site:** https://claude-news.today/
 
 ## Key Commands
 
