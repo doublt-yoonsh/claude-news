@@ -1,6 +1,6 @@
 # Claude Code Daily Briefing
 
-**[https://doublt-yoonsh.github.io/claude-news/#/en/](https://doublt-yoonsh.github.io/claude-news/#/en/)**
+**[https://claude-news.today/#/en/](https://claude-news.today/#/en/)**
 
 A daily briefing service that automatically collects and summarizes the latest news from the Claude Code and Anthropic ecosystem every morning at 10:00 AM KST.
 
@@ -16,9 +16,9 @@ From release notes and new feature walkthroughs to security issues, MCP server/p
 
 ## Languages
 
-- [🇰🇷 한국어](https://doublt-yoonsh.github.io/claude-news/)
-- [🇺🇸 English](https://doublt-yoonsh.github.io/claude-news/#/en/)
-- [🇯🇵 日本語](https://doublt-yoonsh.github.io/claude-news/#/ja/)
+- [🇰🇷 한국어](https://claude-news.today/)
+- [🇺🇸 English](https://claude-news.today/#/en/)
+- [🇯🇵 日本語](https://claude-news.today/#/ja/)
 
 ## Briefing Structure
 
