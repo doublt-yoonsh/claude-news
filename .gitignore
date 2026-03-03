@@ -1,5 +1,6 @@
 .DS_Store
 .omc/
 .env
+.claude/settings.local.json
 docs/briefing-prompt.md
 publish.sh
