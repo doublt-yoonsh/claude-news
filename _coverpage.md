@@ -6,6 +6,6 @@
 - 매일 오전 10시 자동 발행
 - 毎朝10時（KST）自動配信
 
-[한국어](briefings/briefing-2026-03-03)
-[English](en/briefings/briefing-2026-03-03)
-[日本語](ja/briefings/briefing-2026-03-03)
+[한국어](briefings/briefing-2026-03-04)
+[English](en/briefings/briefing-2026-03-04)
+[日本語](ja/briefings/briefing-2026-03-04)
