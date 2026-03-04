@@ -1,0 +1,49 @@
+---
+---
+
+<div class="search-container">
+  <div id="search" data-pagefind-ui></div>
+  <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      new PagefindUI({
+        element: '#search',
+        showSubResults: false,
+        showImages: false,
+      });
+    });
+  </script>
+</div>
+
+<style is:global>
+  .search-container {
+    padding: 0 0 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 8px;
+  }
+  .pagefind-ui__search-input {
+    background: #1e293b !important;
+    color: #e2e8f0 !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 6px !important;
+    font-size: 14px !important;
+    padding: 8px 12px !important;
+  }
+  .pagefind-ui__search-input::placeholder { color: #64748b !important; }
+  .pagefind-ui__search-clear { color: #94a3b8 !important; }
+  .pagefind-ui__result-link { color: #a78bfa !important; }
+  .pagefind-ui__result-excerpt { color: #94a3b8 !important; }
+  .pagefind-ui__result { border-top-color: rgba(255,255,255,0.06) !important; }
+  .pagefind-ui__button { color: #a78bfa !important; background: transparent !important; border-color: #a78bfa !important; }
+  :root {
+    --pagefind-ui-primary: #a78bfa;
+    --pagefind-ui-text: #e2e8f0;
+    --pagefind-ui-background: #0c0f1a;
+    --pagefind-ui-border: rgba(255,255,255,0.1);
+    --pagefind-ui-tag: #1e293b;
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: 6px;
+    --pagefind-ui-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+</style>

@@ -1,0 +1,65 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  lang?: string;
+  slug?: string;
+}
+
+const { title, description = 'Daily AI news briefing covering Claude Code updates, Anthropic releases, and developer ecosystem.', lang = 'ko', slug } = Astro.props;
+
+const langMeta: Record<string, { locale: string; desc: string }> = {
+  ko: { locale: 'ko_KR', desc: 'Claude Code, Anthropic 최신 뉴스를 매일 한국어로 전달합니다.' },
+  en: { locale: 'en_US', desc: 'Daily AI news covering Claude Code updates, Anthropic releases, and developer ecosystem.' },
+  ja: { locale: 'ja_JP', desc: 'Claude Code、Anthropicの最新ニュースを毎日日本語でお届けします。' },
+};
+
+const meta = langMeta[lang] || langMeta.ko;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+const hreflangs = slug ? [
+  { lang: 'ko', href: `${Astro.site}briefings/${slug}/` },
+  { lang: 'en', href: `${Astro.site}en/briefings/${slug}/` },
+  { lang: 'ja', href: `${Astro.site}ja/briefings/${slug}/` },
+] : [
+  { lang: 'ko', href: `${Astro.site}` },
+  { lang: 'en', href: `${Astro.site}en/` },
+  { lang: 'ja', href: `${Astro.site}ja/` },
+];
+---
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>{title}</title>
+<meta name="description" content={description || meta.desc} />
+<link rel="canonical" href={canonicalURL} />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="alternate" type="application/rss+xml" title="Claude Code Daily Briefing" href="/rss.xml" />
+
+<!-- hreflang -->
+{hreflangs.map(h => (
+  <link rel="alternate" hreflang={h.lang} href={h.href} />
+))}
+<link rel="alternate" hreflang="x-default" href={Astro.site} />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Claude Code Daily Briefing" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description || meta.desc} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:locale" content={meta.locale} />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description || meta.desc} />
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-080SMBJEHN"></script>
+<script is:inline>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-080SMBJEHN');
+</script>
