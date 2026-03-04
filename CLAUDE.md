@@ -4,36 +4,50 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Claude News is an automated daily briefing system that collects, summarizes, and publishes Claude Code / Anthropic news in three languages (Korean, English, Japanese). It runs as a zero-build Docsify static site hosted on GitHub Pages.
+Claude News is an automated daily briefing system that collects, summarizes, and publishes Claude Code / Anthropic news in three languages (Korean, English, Japanese). It runs as an Astro static site hosted on GitHub Pages.
 
 **Live site:** https://claude-news.today/
 
 ## Key Commands
 
 ```bash
-# Publish after generating briefings (regenerates sidebars, updates cover page, commits & pushes)
+# Local dev server
+pnpm dev
+
+# Build static site
+pnpm build
+
+# Preview built site
+pnpm preview
+
+# Publish: commit & push (GitHub Actions builds and deploys)
 ./publish.sh
-
-# Trigger Slack notification manually via GitHub Actions
-gh workflow run slack-briefing.yml
 ```
-
-There is no build step — Docsify renders markdown client-side via CDN.
 
 ## Architecture
 
 ### Automation Flow
 
 ```
-runCLAUDErun (macOS, Sonnet) → WebSearch → Generate 3 briefings → publish.sh → GitHub Pages
+runCLAUDErun (macOS, Sonnet) → WebSearch → Generate 3 briefings → publish.sh → GitHub Actions → GitHub Pages
 ```
 
 1. **runCLAUDErun** triggers Claude Code daily with the prompt in `docs/briefing-prompt.md`
 2. Claude Code searches web sources (hada.io, GitHub releases, Anthropic blog) for news from the last 7 days
 3. Reads last 5 briefings for duplicate exclusion
-4. Writes briefings to `briefings/`, `en/briefings/`, `ja/briefings/` as `briefing-YYYY-MM-DD.md`
-5. `publish.sh` regenerates `_sidebar.md` files (month-grouped, newest first), updates `_coverpage.md` with latest date, and pushes to `main`
-6. GitHub Actions posts a Slack summary at 10:10 KST daily
+4. Writes briefings to `src/content/ko/`, `src/content/en/`, `src/content/ja/` as `briefing-YYYY-MM-DD.md` (with frontmatter)
+5. `publish.sh` commits and pushes to `main`
+6. GitHub Actions runs `astro build` (generates HTML, sitemap, RSS, search index) and deploys to GitHub Pages
+
+### Briefing Frontmatter Format
+
+```yaml
+---
+title: "Claude Code 데일리 브리핑 - 2026-03-04"
+date: 2026-03-04
+lang: ko
+---
+```
 
 ### Content Structure (per briefing, ~140 lines)
 
@@ -42,25 +56,30 @@ Release summary table → New features with code examples → Workflow tips → 
 ### Multi-Language Strategy
 
 Single research pass generates all 3 versions simultaneously (not literal translations):
-- **Korean** (`briefings/`): 합니다체, technical terms in English
-- **English** (`en/briefings/`): Professional, accessible tone
-- **Japanese** (`ja/briefings/`): です/ます体, katakana for technical terms
+- **Korean** (`src/content/ko/`): 합니다체, technical terms in English
+- **English** (`src/content/en/`): Professional, accessible tone
+- **Japanese** (`src/content/ja/`): です/ます体, katakana for technical terms
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
-| `docs/briefing-prompt.md` | Complete prompt template for briefing generation (collection rules, duplicate logic, formatting) |
-| `docs/setup-history.md` | Architecture decisions and implementation timeline |
-| `publish.sh` | Sidebar generation, cover page update, git push automation |
-| `index.html` | Docsify config, dark theme CSS, pagination, GA4 tracking |
-| `_coverpage.md` | Landing page (auto-updated by publish.sh) |
-| `scripts/keytar-preload.js` | Mock keytar for Claude Code OAuth in CI/CD |
+| `astro.config.mjs` | Astro config: site URL, i18n, sitemap, pagefind |
+| `src/content.config.ts` | Content Collections schema (ko, en, ja) |
+| `src/layouts/BaseLayout.astro` | Shared layout: dark theme, GA4, sidebar |
+| `src/pages/briefings/[slug].astro` | KO briefing dynamic route |
+| `src/pages/en/briefings/[slug].astro` | EN briefing dynamic route |
+| `src/pages/ja/briefings/[slug].astro` | JP briefing dynamic route |
+| `src/pages/index.astro` | Cover page (landing) |
+| `src/pages/rss.xml.ts` | KO RSS feed |
+| `docs/briefing-prompt.md` | Prompt template for briefing generation |
+| `publish.sh` | Git commit & push automation |
+| `.github/workflows/deploy.yml` | Astro build → GitHub Pages deploy |
 
 ## GitHub Actions Workflows
 
-- **`slack-briefing.yml`**: Daily cron (01:10 UTC / 10:10 KST) — extracts latest briefing, posts Slack block message via webhook
-- **`test-claude-oauth.yml`**: Manual trigger — validates Claude Code OAuth tokens in CI using mock keytar
+- **`deploy.yml`**: On push to main — builds Astro site and deploys to GitHub Pages
+- **`test-claude-oauth.yml`**: Manual trigger — validates Claude Code OAuth tokens in CI
 
 ## Git Conventions
 

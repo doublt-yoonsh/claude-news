@@ -1,0 +1,29 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Pagination from '../../../components/Pagination.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('en');
+  posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: {
+      post,
+      nextPost: i > 0 ? { id: posts[i - 1].id, title: posts[i - 1].data.title } : null,
+      prevPost: i < posts.length - 1 ? { id: posts[i + 1].id, title: posts[i + 1].data.title } : null,
+    },
+  }));
+}
+
+const { post, prevPost, nextPost } = Astro.props;
+const { Content } = await render(post);
+---
+
+<BaseLayout title={post.data.title} lang="en" slug={post.id}>
+  <article>
+    <Content />
+  </article>
+  <Pagination prevPost={prevPost} nextPost={nextPost} lang="en" />
+</BaseLayout>

@@ -1,0 +1,47 @@
+---
+interface Props {
+  prevPost?: { id: string; title: string } | null;
+  nextPost?: { id: string; title: string } | null;
+  lang: string;
+}
+
+const { prevPost, nextPost, lang } = Astro.props;
+const prefix = lang === 'ko' ? '' : `/${lang}`;
+---
+
+<nav class="pagination">
+  {nextPost ? (
+    <a href={`${prefix}/briefings/${nextPost.id}/`} class="pagination-link prev">
+      <span class="label">← Newer</span>
+      <span class="title">{nextPost.title}</span>
+    </a>
+  ) : <div />}
+  {prevPost ? (
+    <a href={`${prefix}/briefings/${prevPost.id}/`} class="pagination-link next">
+      <span class="label">Older →</span>
+      <span class="title">{prevPost.title}</span>
+    </a>
+  ) : <div />}
+</nav>
+
+<style>
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .pagination-link {
+    text-decoration: none;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: rgba(167,139,250,0.06);
+    max-width: 48%;
+  }
+  .pagination-link:hover { background: rgba(167,139,250,0.12); }
+  .label { display: block; color: #a78bfa; font-size: 13px; margin-bottom: 4px; }
+  .title { display: block; color: #e2e8f0; font-size: 14px; }
+  .next { text-align: right; margin-left: auto; }
+</style>

@@ -1,0 +1,103 @@
+---
+import { getCollection } from 'astro:content';
+import LangSwitcher from './LangSwitcher.astro';
+import Search from './Search.astro';
+
+interface Props {
+  lang: string;
+  currentSlug?: string;
+}
+
+const { lang, currentSlug } = Astro.props;
+
+const collectionName = lang as 'ko' | 'en' | 'ja';
+const posts = await getCollection(collectionName);
+posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+// Group by month
+const grouped = new Map<string, typeof posts>();
+for (const post of posts) {
+  const d = new Date(post.data.date);
+  const month = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  if (!grouped.has(month)) grouped.set(month, []);
+  grouped.get(month)!.push(post);
+}
+
+const prefix = lang === 'ko' ? '' : `/${lang}`;
+---
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <a href={prefix || '/'} class="site-title">Claude Code Daily Briefing</a>
+  </div>
+  <LangSwitcher currentLang={lang} slug={currentSlug} />
+  <Search />
+  <nav class="sidebar-nav">
+    {[...grouped.entries()].map(([month, items]) => (
+      <div class="month-group">
+        <div class="month-label">{month}</div>
+        <ul>
+          {items.map(post => {
+            const d = new Date(post.data.date);
+            const shortDate = `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            const href = `${prefix}/briefings/${post.id}/`;
+            const isActive = post.id === currentSlug;
+            return (
+              <li>
+                <a href={href} class:list={[{ active: isActive }]}>{shortDate}</a>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    ))}
+  </nav>
+</aside>
+
+<style>
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 260px;
+    background: #0c0f1a;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    overflow-y: auto;
+    padding: 16px;
+    z-index: 100;
+  }
+  .sidebar-header { padding: 8px 0 12px; }
+  .site-title {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .month-label {
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 700;
+    margin: 12px 0 4px;
+  }
+  ul { list-style: none; padding: 0; margin: 0; }
+  li a {
+    display: block;
+    color: #cbd5e1;
+    font-size: 14px;
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  li a:hover { background: rgba(167,139,250,0.1); color: #fff; }
+  li a.active { background: rgba(167,139,250,0.2); color: #a78bfa; font-weight: 600; }
+
+  @media (max-width: 768px) {
+    .sidebar {
+      position: relative;
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+  }
+</style>

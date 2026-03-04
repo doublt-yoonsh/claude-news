@@ -1,0 +1,43 @@
+---
+interface Props {
+  currentLang: string;
+  slug?: string;
+}
+
+const { currentLang, slug } = Astro.props;
+
+const links = [
+  { lang: 'ko', label: 'KO', href: slug ? `/briefings/${slug}/` : '/' },
+  { lang: 'en', label: 'EN', href: slug ? `/en/briefings/${slug}/` : '/en/' },
+  { lang: 'ja', label: 'JP', href: slug ? `/ja/briefings/${slug}/` : '/ja/' },
+];
+---
+
+<div class="lang-switcher">
+  {links.map((link, i) => (
+    <>
+      {i > 0 && <span class="sep"> · </span>}
+      {link.lang === currentLang
+        ? <strong>{link.label}</strong>
+        : <a href={link.href}>{link.label}</a>
+      }
+    </>
+  ))}
+</div>
+
+<style>
+  .lang-switcher {
+    text-align: center;
+    padding: 8px 0 12px;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 8px;
+  }
+  .lang-switcher a {
+    color: #a78bfa;
+    text-decoration: none;
+  }
+  .lang-switcher a:hover { text-decoration: underline; }
+  .lang-switcher strong { color: #fff; }
+  .sep { color: #64748b; }
+</style>
