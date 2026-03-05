@@ -1,0 +1,103 @@
+---
+interface Props {
+  lang?: string;
+  compact?: boolean;
+}
+
+const { lang = 'ko', compact = false } = Astro.props;
+
+const labels = {
+  ko: { heading: '이메일로 브리핑 받기', desc: '새 브리핑이 발행되면 이메일로 알려드립니다.', placeholder: '이메일 주소', button: '구독하기' },
+  en: { heading: 'Get briefings by email', desc: 'We\'ll notify you when new briefings are published.', placeholder: 'Email address', button: 'Subscribe' },
+  ja: { heading: 'メールでブリーフィングを受け取る', desc: '新しいブリーフィングが公開されたらメールでお知らせします。', placeholder: 'メールアドレス', button: '購読する' },
+};
+
+const t = labels[lang as keyof typeof labels] || labels.ko;
+
+// TODO: Buttondown 가입 후 YOUR_USERNAME을 실제 username으로 교체
+const BUTTONDOWN_USERNAME = 'YOUR_USERNAME';
+---
+
+<div class:list={['subscribe', { compact }]}>
+  {!compact && <h3 class="subscribe-heading">{t.heading}</h3>}
+  <p class="subscribe-desc">{t.desc}</p>
+  <form
+    action={`https://buttondown.com/api/emails/embed-subscribe/${BUTTONDOWN_USERNAME}`}
+    method="post"
+    target="popupwindow"
+    class="subscribe-form"
+  >
+    <input type="email" name="email" placeholder={t.placeholder} required />
+    <button type="submit">{t.button}</button>
+  </form>
+</div>
+
+<style>
+  .subscribe {
+    border: 1px solid rgba(167, 139, 250, 0.2);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 32px 0;
+    background: rgba(167, 139, 250, 0.05);
+    text-align: center;
+  }
+  .subscribe.compact {
+    padding: 16px;
+    margin: 16px 0;
+  }
+  .subscribe-heading {
+    color: #e2e8f0;
+    font-size: 1.1rem;
+    margin: 0 0 8px;
+  }
+  .subscribe-desc {
+    color: #94a3b8;
+    font-size: 0.875rem;
+    margin: 0 0 16px;
+  }
+  .compact .subscribe-desc {
+    margin-bottom: 12px;
+  }
+  .subscribe-form {
+    display: flex;
+    gap: 8px;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .subscribe-form input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: #1e293b;
+    color: #e2e8f0;
+    font-size: 0.875rem;
+  }
+  .subscribe-form input::placeholder {
+    color: #64748b;
+  }
+  .subscribe-form input:focus {
+    outline: none;
+    border-color: #a78bfa;
+  }
+  .subscribe-form button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #7c3aed;
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .subscribe-form button:hover {
+    background: #6d28d9;
+  }
+
+  @media (max-width: 480px) {
+    .subscribe-form {
+      flex-direction: column;
+    }
+  }
+</style>

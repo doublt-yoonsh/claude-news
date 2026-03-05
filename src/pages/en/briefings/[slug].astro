@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Pagination from '../../../components/Pagination.astro';
+import Subscribe from '../../../components/Subscribe.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('en');
@@ -25,5 +26,6 @@ const { Content } = await render(post);
   <article>
     <Content />
   </article>
+  <Subscribe lang="en" compact />
   <Pagination prevPost={prevPost} nextPost={nextPost} lang="en" />
 </BaseLayout>

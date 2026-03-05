@@ -37,6 +37,18 @@ const latestJa = jaPosts[0];
         {latestEn && <a href={`/en/briefings/${latestEn.id}/`}>English</a>}
         {latestJa && <a href={`/ja/briefings/${latestJa.id}/`}>日本語</a>}
       </div>
+      <div class="subscribe-section">
+        <form
+          action="https://buttondown.com/api/emails/embed-subscribe/YOUR_USERNAME"
+          method="post"
+          target="popupwindow"
+          class="cover-subscribe"
+        >
+          <input type="email" name="email" placeholder="이메일로 브리핑 받기" required />
+          <button type="submit">구독</button>
+        </form>
+        <p class="subscribe-note">새 브리핑이 발행되면 이메일로 알려드립니다</p>
+      </div>
     </div>
   </section>
 </body>
@@ -99,4 +111,47 @@ const latestJa = jaPosts[0];
     cursor: pointer;
   }
   .buttons a:hover { background: #6d28d9; }
+
+  .subscribe-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .cover-subscribe {
+    display: flex;
+    gap: 8px;
+    max-width: 380px;
+    margin: 0 auto;
+  }
+  .cover-subscribe input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    font-size: 0.875rem;
+  }
+  .cover-subscribe input::placeholder { color: #94a3b8; }
+  .cover-subscribe input:focus { outline: none; border-color: #a78bfa; }
+  .cover-subscribe button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #7c3aed;
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .cover-subscribe button:hover { background: #6d28d9; }
+  .subscribe-note {
+    color: #64748b;
+    font-size: 0.8rem;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 480px) {
+    .cover-subscribe { flex-direction: column; }
+  }
 </style>
