@@ -7,43 +7,110 @@ interface Props {
 const { lang = 'ko', compact = false } = Astro.props;
 
 const labels = {
-  ko: { heading: '이메일로 브리핑 받기', desc: '새 브리핑이 발행되면 이메일로 알려드립니다.', placeholder: '이메일 주소', button: '구독하기' },
-  en: { heading: 'Get briefings by email', desc: 'We\'ll notify you when new briefings are published.', placeholder: 'Email address', button: 'Subscribe' },
-  ja: { heading: 'メールでブリーフィングを受け取る', desc: '新しいブリーフィングが公開されたらメールでお知らせします。', placeholder: 'メールアドレス', button: '購読する' },
+  ko: {
+    heading: '이메일로 브리핑 받기',
+    desc: '새 브리핑이 발행되면 이메일로 알려드립니다.',
+    placeholder: '이메일 주소',
+    button: '구독하기',
+    sending: '처리 중...',
+    success: '인증 메일을 보내드렸습니다. 이메일을 확인해주세요!',
+    error: '구독 처리 중 오류가 발생했습니다. 다시 시도해주세요.',
+    duplicate: '이미 구독 중인 이메일입니다.',
+  },
+  en: {
+    heading: 'Get briefings by email',
+    desc: 'We\'ll notify you when new briefings are published.',
+    placeholder: 'Email address',
+    button: 'Subscribe',
+    sending: 'Processing...',
+    success: 'We sent you a confirmation email. Please check your inbox!',
+    error: 'Something went wrong. Please try again.',
+    duplicate: 'This email is already subscribed.',
+  },
+  ja: {
+    heading: 'メールでブリーフィングを受け取る',
+    desc: '新しいブリーフィングが公開されたらメールでお知らせします。',
+    placeholder: 'メールアドレス',
+    button: '購読する',
+    sending: '処理中...',
+    success: '確認メールを送信しました。メールをご確認ください！',
+    error: 'エラーが発生しました。もう一度お試しください。',
+    duplicate: 'このメールアドレスは既に登録されています。',
+  },
 };
 
 const t = labels[lang as keyof typeof labels] || labels.ko;
 
-// TODO: Buttondown 승인 후 COMING_SOON을 false로 변경
-const COMING_SOON = true;
-const BUTTONDOWN_USERNAME = 'YOUR_USERNAME';
+const API_KEY = 'eo_6f7824c66015242db4a1215f6c9ca72190b1dea33aa42363c31158bbc1abdbe6';
+const LIST_ID = '4a18eb0e-18ac-11f1-8b8b-59033e1b4cf3';
 ---
 
-<div class:list={['subscribe', { compact }]}>
+<div class:list={['subscribe', { compact }]} data-lang={lang} data-api-key={API_KEY} data-list-id={LIST_ID}>
   {!compact && <h3 class="subscribe-heading">{t.heading}</h3>}
   <p class="subscribe-desc">{t.desc}</p>
-  {COMING_SOON ? (
-    <div class="subscribe-form">
-      <input type="email" placeholder={t.placeholder} disabled />
-      <button type="button" class="coming-soon-btn">{t.button}</button>
-    </div>
-  ) : (
-    <form
-      action={`https://buttondown.com/api/emails/embed-subscribe/${BUTTONDOWN_USERNAME}`}
-      method="post"
-      target="popupwindow"
-      class="subscribe-form"
-    >
-      <input type="email" name="email" placeholder={t.placeholder} required />
-      <button type="submit">{t.button}</button>
-    </form>
-  )}
+  <form class="subscribe-form" data-labels={JSON.stringify(t)}>
+    <input type="email" name="email" placeholder={t.placeholder} required />
+    <button type="submit">{t.button}</button>
+  </form>
+  <p class="subscribe-msg" aria-live="polite"></p>
 </div>
 
 <script>
-  document.querySelectorAll('.coming-soon-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      alert('Email subscription is coming soon! We\'re setting things up and it\'ll be available shortly.');
+  document.querySelectorAll('.subscribe-form').forEach(form => {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formEl = e.currentTarget as HTMLFormElement;
+      const container = formEl.closest('.subscribe') as HTMLElement;
+      const labels = JSON.parse(formEl.dataset.labels || '{}');
+      const msgEl = container.querySelector('.subscribe-msg') as HTMLElement;
+      const btn = formEl.querySelector('button') as HTMLButtonElement;
+      const input = formEl.querySelector('input') as HTMLInputElement;
+      const email = input.value.trim();
+
+      if (!email) return;
+
+      const apiKey = container.dataset.apiKey;
+      const listId = container.dataset.listId;
+      const lang = container.dataset.lang;
+
+      btn.disabled = true;
+      btn.textContent = labels.sending;
+      msgEl.textContent = '';
+      msgEl.className = 'subscribe-msg';
+
+      try {
+        const res = await fetch(`https://emailoctopus.com/api/1.6/lists/${listId}/contacts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            api_key: apiKey,
+            email_address: email,
+            tags: [lang],
+            status: 'PENDING',
+          }),
+        });
+
+        if (res.ok) {
+          msgEl.textContent = labels.success;
+          msgEl.classList.add('success');
+          input.value = '';
+        } else {
+          const data = await res.json();
+          if (data.error?.code === 'MEMBER_EXISTS_WITH_EMAIL_ADDRESS') {
+            msgEl.textContent = labels.duplicate;
+            msgEl.classList.add('error');
+          } else {
+            msgEl.textContent = labels.error;
+            msgEl.classList.add('error');
+          }
+        }
+      } catch {
+        msgEl.textContent = labels.error;
+        msgEl.classList.add('error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = labels.button;
+      }
     });
   });
 </script>
@@ -109,6 +176,21 @@ const BUTTONDOWN_USERNAME = 'YOUR_USERNAME';
   }
   .subscribe-form button:hover {
     background: #6d28d9;
+  }
+  .subscribe-form button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .subscribe-msg {
+    font-size: 0.8rem;
+    margin-top: 10px;
+    min-height: 1.2em;
+  }
+  .subscribe-msg.success {
+    color: #4ade80;
+  }
+  .subscribe-msg.error {
+    color: #f87171;
   }
 
   @media (max-width: 480px) {

@@ -38,15 +38,62 @@ const latestJa = jaPosts[0];
         {latestJa && <a href={`/ja/briefings/${latestJa.id}/`}>日本語</a>}
       </div>
       <div class="subscribe-section">
-        <div class="cover-subscribe">
-          <input type="email" placeholder="이메일로 브리핑 받기" disabled />
-          <button type="button" id="cover-subscribe-btn">구독</button>
-        </div>
+        <form class="cover-subscribe" id="cover-subscribe-form">
+          <input type="email" name="email" placeholder="이메일로 브리핑 받기" required />
+          <select name="lang" class="lang-select">
+            <option value="ko">한국어</option>
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+          </select>
+          <button type="submit">구독</button>
+        </form>
         <p class="subscribe-note">새 브리핑이 발행되면 이메일로 알려드립니다</p>
+        <p class="subscribe-msg" id="cover-subscribe-msg" aria-live="polite"></p>
       </div>
       <script>
-        document.getElementById('cover-subscribe-btn')?.addEventListener('click', () => {
-          alert('Email subscription is coming soon! We\'re setting things up and it\'ll be available shortly.');
+        const form = document.getElementById('cover-subscribe-form') as HTMLFormElement;
+        form?.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = (form.querySelector('input[name="email"]') as HTMLInputElement).value.trim();
+          const lang = (form.querySelector('select[name="lang"]') as HTMLSelectElement).value;
+          const btn = form.querySelector('button') as HTMLButtonElement;
+          const msg = document.getElementById('cover-subscribe-msg') as HTMLElement;
+          if (!email) return;
+          btn.disabled = true;
+          btn.textContent = '처리 중...';
+          msg.textContent = '';
+          msg.className = 'subscribe-msg';
+          try {
+            const res = await fetch('https://emailoctopus.com/api/1.6/lists/4a18eb0e-18ac-11f1-8b8b-59033e1b4cf3/contacts', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                api_key: 'eo_6f7824c66015242db4a1215f6c9ca72190b1dea33aa42363c31158bbc1abdbe6',
+                email_address: email,
+                tags: [lang],
+                status: 'PENDING',
+              }),
+            });
+            if (res.ok) {
+              msg.textContent = '인증 메일을 보내드렸습니다. 이메일을 확인해주세요!';
+              msg.classList.add('success');
+              (form.querySelector('input[name="email"]') as HTMLInputElement).value = '';
+            } else {
+              const data = await res.json();
+              if (data.error?.code === 'MEMBER_EXISTS_WITH_EMAIL_ADDRESS') {
+                msg.textContent = '이미 구독 중인 이메일입니다.';
+              } else {
+                msg.textContent = '오류가 발생했습니다. 다시 시도해주세요.';
+              }
+              msg.classList.add('error');
+            }
+          } catch {
+            msg.textContent = '오류가 발생했습니다. 다시 시도해주세요.';
+            msg.classList.add('error');
+          } finally {
+            btn.disabled = false;
+            btn.textContent = '구독';
+          }
         });
       </script>
     </div>
@@ -134,6 +181,23 @@ const latestJa = jaPosts[0];
   }
   .cover-subscribe input::placeholder { color: #94a3b8; }
   .cover-subscribe input:focus { outline: none; border-color: #a78bfa; }
+  .lang-select {
+    padding: 10px 28px 10px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  .lang-select:focus { outline: none; border-color: #a78bfa; }
+  .subscribe-msg {
+    font-size: 0.8rem;
+    margin-top: 8px;
+    min-height: 1.2em;
+  }
+  .subscribe-msg.success { color: #4ade80; }
+  .subscribe-msg.error { color: #f87171; }
   .cover-subscribe button {
     padding: 10px 20px;
     border: none;
