@@ -86,15 +86,10 @@ const latestJa = jaPosts[0];
           msg.textContent = '';
           msg.className = 'subscribe-msg';
           try {
-            const res = await fetch('https://emailoctopus.com/api/1.6/lists/4a18eb0e-18ac-11f1-8b8b-59033e1b4cf3/contacts', {
+            const res = await fetch('/api/subscribe', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                api_key: 'eo_6f7824c66015242db4a1215f6c9ca72190b1dea33aa42363c31158bbc1abdbe6',
-                email_address: email,
-                tags: [lang],
-                status: 'PENDING',
-              }),
+              body: JSON.stringify({ email, lang }),
             });
             if (res.ok) {
               msg.textContent = t.success;

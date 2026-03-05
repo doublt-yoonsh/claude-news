@@ -20,3 +20,4 @@ scripts/
 CLAUDE.md
 publish-notify.sh
 /favicon.svg
+.wrangler/
