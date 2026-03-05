@@ -15,3 +15,8 @@ dist/
 .kiro/
 skills-lock.json
 scripts/
+
+# Local-only files
+CLAUDE.md
+publish-notify.sh
+/favicon.svg
