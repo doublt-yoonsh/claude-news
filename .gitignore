@@ -2,7 +2,7 @@
 .omc/
 .env
 .claude/settings.local.json
-docs/briefing-prompt.md
+docs/
 publish.sh
 node_modules/
 dist/
