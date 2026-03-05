@@ -39,18 +39,39 @@ const latestJa = jaPosts[0];
       </div>
       <div class="subscribe-section">
         <form class="cover-subscribe" id="cover-subscribe-form">
-          <input type="email" name="email" placeholder="이메일로 브리핑 받기" required />
-          <select name="lang" class="lang-select">
+          <input type="email" name="email" placeholder="Get briefing via email" required />
+          <select name="lang" class="lang-select" id="lang-select">
+            <option value="" disabled selected>Language</option>
             <option value="ko">한국어</option>
             <option value="en">English</option>
             <option value="ja">日本語</option>
           </select>
-          <button type="submit">구독</button>
+          <button type="submit">Subscribe</button>
         </form>
-        <p class="subscribe-note">새 브리핑이 발행되면 이메일로 알려드립니다</p>
+        <p class="subscribe-note" id="subscribe-note">Get notified when new briefings are published</p>
         <p class="subscribe-msg" id="cover-subscribe-msg" aria-live="polite"></p>
       </div>
       <script>
+        const i18n: Record<string, { placeholder: string; note: string; processing: string; success: string; duplicate: string; error: string; submit: string }> = {
+          '':   { placeholder: 'Get briefing via email', note: 'Get notified when new briefings are published', processing: 'Processing...', success: 'Confirmation email sent. Please check your inbox!', duplicate: 'This email is already subscribed.', error: 'An error occurred. Please try again.', submit: 'Subscribe' },
+          'ko': { placeholder: '이메일로 브리핑 받기', note: '새 브리핑이 발행되면 이메일로 알려드립니다', processing: '처리 중...', success: '인증 메일을 보내드렸습니다. 이메일을 확인해주세요!', duplicate: '이미 구독 중인 이메일입니다.', error: '오류가 발생했습니다. 다시 시도해주세요.', submit: '구독' },
+          'en': { placeholder: 'Get briefing via email', note: 'Get notified when new briefings are published', processing: 'Processing...', success: 'Confirmation email sent. Please check your inbox!', duplicate: 'This email is already subscribed.', error: 'An error occurred. Please try again.', submit: 'Subscribe' },
+          'ja': { placeholder: 'メールでブリーフィングを受け取る', note: '新しいブリーフィングが発行されたらメールでお知らせします', processing: '処理中...', success: '確認メールを送信しました。メールをご確認ください！', duplicate: 'すでに登録済みのメールアドレスです。', error: 'エラーが発生しました。もう一度お試しください。', submit: '購読' },
+        };
+
+        const langSelect = document.getElementById('lang-select') as HTMLSelectElement;
+        const subscribeNote = document.getElementById('subscribe-note') as HTMLElement;
+        const emailInput = document.querySelector('#cover-subscribe-form input[name="email"]') as HTMLInputElement;
+        const submitBtn = document.querySelector('#cover-subscribe-form button') as HTMLButtonElement;
+
+        langSelect?.addEventListener('change', () => {
+          const lang = langSelect.value;
+          const t = i18n[lang] || i18n[''];
+          subscribeNote.textContent = t.note;
+          emailInput.placeholder = t.placeholder;
+          submitBtn.textContent = t.submit;
+        });
+
         const form = document.getElementById('cover-subscribe-form') as HTMLFormElement;
         form?.addEventListener('submit', async (e) => {
           e.preventDefault();
@@ -58,9 +79,10 @@ const latestJa = jaPosts[0];
           const lang = (form.querySelector('select[name="lang"]') as HTMLSelectElement).value;
           const btn = form.querySelector('button') as HTMLButtonElement;
           const msg = document.getElementById('cover-subscribe-msg') as HTMLElement;
-          if (!email) return;
+          if (!email || !lang) return;
+          const t = i18n[lang] || i18n[''];
           btn.disabled = true;
-          btn.textContent = '처리 중...';
+          btn.textContent = t.processing;
           msg.textContent = '';
           msg.className = 'subscribe-msg';
           try {
@@ -75,24 +97,24 @@ const latestJa = jaPosts[0];
               }),
             });
             if (res.ok) {
-              msg.textContent = '인증 메일을 보내드렸습니다. 이메일을 확인해주세요!';
+              msg.textContent = t.success;
               msg.classList.add('success');
               (form.querySelector('input[name="email"]') as HTMLInputElement).value = '';
             } else {
               const data = await res.json();
               if (data.error?.code === 'MEMBER_EXISTS_WITH_EMAIL_ADDRESS') {
-                msg.textContent = '이미 구독 중인 이메일입니다.';
+                msg.textContent = t.duplicate;
               } else {
-                msg.textContent = '오류가 발생했습니다. 다시 시도해주세요.';
+                msg.textContent = t.error;
               }
               msg.classList.add('error');
             }
           } catch {
-            msg.textContent = '오류가 발생했습니다. 다시 시도해주세요.';
+            msg.textContent = t.error;
             msg.classList.add('error');
           } finally {
             btn.disabled = false;
-            btn.textContent = '구독';
+            btn.textContent = t.submit;
           }
         });
       </script>
@@ -167,7 +189,7 @@ const latestJa = jaPosts[0];
   .cover-subscribe {
     display: flex;
     gap: 8px;
-    max-width: 380px;
+    max-width: min(640px, 100%);
     margin: 0 auto;
   }
   .cover-subscribe input {
@@ -182,13 +204,20 @@ const latestJa = jaPosts[0];
   .cover-subscribe input::placeholder { color: #94a3b8; }
   .cover-subscribe input:focus { outline: none; border-color: #a78bfa; }
   .lang-select {
-    padding: 10px 28px 10px 10px;
+    width: 120px;
+    flex-shrink: 0;
+    padding: 10px 40px 10px 14px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.08);
     color: #e2e8f0;
     font-size: 0.8rem;
     cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23e2e8f0' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
   }
   .lang-select:focus { outline: none; border-color: #a78bfa; }
   .subscribe-msg {
@@ -199,7 +228,9 @@ const latestJa = jaPosts[0];
   .subscribe-msg.success { color: #4ade80; }
   .subscribe-msg.error { color: #f87171; }
   .cover-subscribe button {
-    padding: 10px 20px;
+    width: 120px;
+    flex-shrink: 0;
+    padding: 10px 16px;
     border: none;
     border-radius: 8px;
     background: #7c3aed;
@@ -217,5 +248,6 @@ const latestJa = jaPosts[0];
 
   @media (max-width: 480px) {
     .cover-subscribe { flex-direction: column; }
+    .lang-select, .cover-subscribe button { width: 100%; }
   }
 </style>
