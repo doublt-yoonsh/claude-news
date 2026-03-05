@@ -14,23 +14,39 @@ const labels = {
 
 const t = labels[lang as keyof typeof labels] || labels.ko;
 
-// TODO: Buttondown 가입 후 YOUR_USERNAME을 실제 username으로 교체
+// TODO: Buttondown 승인 후 COMING_SOON을 false로 변경
+const COMING_SOON = true;
 const BUTTONDOWN_USERNAME = 'YOUR_USERNAME';
 ---
 
 <div class:list={['subscribe', { compact }]}>
   {!compact && <h3 class="subscribe-heading">{t.heading}</h3>}
   <p class="subscribe-desc">{t.desc}</p>
-  <form
-    action={`https://buttondown.com/api/emails/embed-subscribe/${BUTTONDOWN_USERNAME}`}
-    method="post"
-    target="popupwindow"
-    class="subscribe-form"
-  >
-    <input type="email" name="email" placeholder={t.placeholder} required />
-    <button type="submit">{t.button}</button>
-  </form>
+  {COMING_SOON ? (
+    <div class="subscribe-form">
+      <input type="email" placeholder={t.placeholder} disabled />
+      <button type="button" class="coming-soon-btn">{t.button}</button>
+    </div>
+  ) : (
+    <form
+      action={`https://buttondown.com/api/emails/embed-subscribe/${BUTTONDOWN_USERNAME}`}
+      method="post"
+      target="popupwindow"
+      class="subscribe-form"
+    >
+      <input type="email" name="email" placeholder={t.placeholder} required />
+      <button type="submit">{t.button}</button>
+    </form>
+  )}
 </div>
+
+<script>
+  document.querySelectorAll('.coming-soon-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      alert('Email subscription is coming soon! We\'re setting things up and it\'ll be available shortly.');
+    });
+  });
+</script>
 
 <style>
   .subscribe {
