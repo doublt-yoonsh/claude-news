@@ -7,3 +7,11 @@ publish.sh
 node_modules/
 dist/
 .astro/
+
+# Local tool configs
+.agent/
+.agents/
+.claude/skills/
+.kiro/
+skills-lock.json
+scripts/
