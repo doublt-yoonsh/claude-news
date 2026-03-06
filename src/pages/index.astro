@@ -70,6 +70,8 @@ const latestJa = jaPosts[0];
           subscribeNote.textContent = t.note;
           emailInput.placeholder = t.placeholder;
           submitBtn.textContent = t.submit;
+          const msg = document.getElementById('cover-subscribe-msg') as HTMLElement;
+          if (msg && lang) { msg.textContent = ''; msg.className = 'subscribe-msg'; }
         });
 
         const form = document.getElementById('cover-subscribe-form') as HTMLFormElement;
@@ -79,7 +81,12 @@ const latestJa = jaPosts[0];
           const lang = (form.querySelector('select[name="lang"]') as HTMLSelectElement).value;
           const btn = form.querySelector('button') as HTMLButtonElement;
           const msg = document.getElementById('cover-subscribe-msg') as HTMLElement;
-          if (!email || !lang) return;
+          if (!lang) {
+            msg.textContent = 'Please select a language.';
+            msg.className = 'subscribe-msg error';
+            return;
+          }
+          if (!email) return;
           const t = i18n[lang] || i18n[''];
           btn.disabled = true;
           btn.textContent = t.processing;
@@ -238,7 +245,7 @@ const latestJa = jaPosts[0];
   .subscribe-note {
     color: #64748b;
     font-size: 0.8rem;
-    margin-top: 8px;
+    margin-top: 16px;
   }
 
   @media (max-width: 480px) {
