@@ -41,6 +41,13 @@ const labels = {
 
 const t = labels[lang as keyof typeof labels] || labels.ko;
 
+const privacyLinks = {
+  ko: { url: '/privacy/', text: '구독 시 <a href="/privacy/">개인정보 처리방침</a>에 동의합니다.' },
+  en: { url: '/en/privacy/', text: 'By subscribing, you agree to our <a href="/en/privacy/">Privacy Policy</a>.' },
+  ja: { url: '/ja/privacy/', text: '購読することで<a href="/ja/privacy/">プライバシーポリシー</a>に同意します。' },
+};
+const privacy = privacyLinks[lang as keyof typeof privacyLinks] || privacyLinks.ko;
+
 ---
 
 <div class:list={['subscribe', { compact }]} data-lang={lang}>
@@ -51,6 +58,7 @@ const t = labels[lang as keyof typeof labels] || labels.ko;
     <button type="submit">{t.button}</button>
   </form>
   <p class="subscribe-msg" aria-live="polite"></p>
+  <p class="privacy-link" set:html={privacy.text} />
 </div>
 
 <script>
@@ -182,6 +190,18 @@ const t = labels[lang as keyof typeof labels] || labels.ko;
   }
   .subscribe-msg.error {
     color: #f87171;
+  }
+  .privacy-link {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 8px;
+  }
+  .privacy-link a {
+    color: #94a3b8;
+    text-decoration: underline;
+  }
+  .privacy-link a:hover {
+    color: #a78bfa;
   }
 
   @media (max-width: 480px) {

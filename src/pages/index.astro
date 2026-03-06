@@ -50,19 +50,21 @@ const latestJa = jaPosts[0];
         </form>
         <p class="subscribe-note" id="subscribe-note">Get notified when new briefings are published</p>
         <p class="subscribe-msg" id="cover-subscribe-msg" aria-live="polite"></p>
+        <p class="privacy-link" id="privacy-link">By subscribing, you agree to our <a href="/en/privacy/">Privacy Policy</a>.</p>
       </div>
       <script>
-        const i18n: Record<string, { placeholder: string; note: string; processing: string; success: string; duplicate: string; error: string; submit: string }> = {
-          '':   { placeholder: 'Get briefing via email', note: 'Get notified when new briefings are published', processing: 'Processing...', success: 'Confirmation email sent. Please check your inbox!', duplicate: 'This email is already subscribed.', error: 'An error occurred. Please try again.', submit: 'Subscribe' },
-          'ko': { placeholder: '이메일로 브리핑 받기', note: '새 브리핑이 발행되면 이메일로 알려드립니다', processing: '처리 중...', success: '인증 메일을 보내드렸습니다. 이메일을 확인해주세요!', duplicate: '이미 구독 중인 이메일입니다.', error: '오류가 발생했습니다. 다시 시도해주세요.', submit: '구독' },
-          'en': { placeholder: 'Get briefing via email', note: 'Get notified when new briefings are published', processing: 'Processing...', success: 'Confirmation email sent. Please check your inbox!', duplicate: 'This email is already subscribed.', error: 'An error occurred. Please try again.', submit: 'Subscribe' },
-          'ja': { placeholder: 'メールでブリーフィングを受け取る', note: '新しいブリーフィングが発行されたらメールでお知らせします', processing: '処理中...', success: '確認メールを送信しました。メールをご確認ください！', duplicate: 'すでに登録済みのメールアドレスです。', error: 'エラーが発生しました。もう一度お試しください。', submit: '購読' },
+        const i18n: Record<string, { placeholder: string; note: string; processing: string; success: string; duplicate: string; error: string; submit: string; privacy: string }> = {
+          '':   { placeholder: 'Get briefing via email', note: 'Get notified when new briefings are published', processing: 'Processing...', success: 'Confirmation email sent. Please check your inbox!', duplicate: 'This email is already subscribed.', error: 'An error occurred. Please try again.', submit: 'Subscribe', privacy: 'By subscribing, you agree to our <a href="/en/privacy/">Privacy Policy</a>.' },
+          'ko': { placeholder: '이메일로 브리핑 받기', note: '새 브리핑이 발행되면 이메일로 알려드립니다', processing: '처리 중...', success: '인증 메일을 보내드렸습니다. 이메일을 확인해주세요!', duplicate: '이미 구독 중인 이메일입니다.', error: '오류가 발생했습니다. 다시 시도해주세요.', submit: '구독', privacy: '구독 시 <a href="/privacy/">개인정보 처리방침</a>에 동의합니다.' },
+          'en': { placeholder: 'Get briefing via email', note: 'Get notified when new briefings are published', processing: 'Processing...', success: 'Confirmation email sent. Please check your inbox!', duplicate: 'This email is already subscribed.', error: 'An error occurred. Please try again.', submit: 'Subscribe', privacy: 'By subscribing, you agree to our <a href="/en/privacy/">Privacy Policy</a>.' },
+          'ja': { placeholder: 'メールでブリーフィングを受け取る', note: '新しいブリーフィングが発行されたらメールでお知らせします', processing: '処理中...', success: '確認メールを送信しました。メールをご確認ください！', duplicate: 'すでに登録済みのメールアドレスです。', error: 'エラーが発生しました。もう一度お試しください。', submit: '購読', privacy: '購読することで<a href="/ja/privacy/">プライバシーポリシー</a>に同意します。' },
         };
 
         const langSelect = document.getElementById('lang-select') as HTMLSelectElement;
         const subscribeNote = document.getElementById('subscribe-note') as HTMLElement;
         const emailInput = document.querySelector('#cover-subscribe-form input[name="email"]') as HTMLInputElement;
         const submitBtn = document.querySelector('#cover-subscribe-form button') as HTMLButtonElement;
+        const privacyLink = document.getElementById('privacy-link') as HTMLElement;
 
         langSelect?.addEventListener('change', () => {
           const lang = langSelect.value;
@@ -70,6 +72,7 @@ const latestJa = jaPosts[0];
           subscribeNote.textContent = t.note;
           emailInput.placeholder = t.placeholder;
           submitBtn.textContent = t.submit;
+          privacyLink.innerHTML = t.privacy;
           const msg = document.getElementById('cover-subscribe-msg') as HTMLElement;
           if (msg && lang) { msg.textContent = ''; msg.className = 'subscribe-msg'; }
         });
@@ -246,6 +249,18 @@ const latestJa = jaPosts[0];
     color: #64748b;
     font-size: 0.8rem;
     margin-top: 16px;
+  }
+  .privacy-link {
+    color: #64748b;
+    font-size: 0.75rem;
+    margin-top: 8px;
+  }
+  .privacy-link a {
+    color: #94a3b8;
+    text-decoration: underline;
+  }
+  .privacy-link a:hover {
+    color: #a78bfa;
   }
 
   @media (max-width: 480px) {

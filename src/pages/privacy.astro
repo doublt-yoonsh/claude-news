@@ -1,0 +1,100 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="개인정보 처리방침 - Claude News" lang="ko" showSidebar={false}>
+  <div class="privacy">
+    <h1>개인정보 처리방침</h1>
+    <p class="effective">시행일: 2026년 3월 6일</p>
+
+    <p>OTTFStudio(이하 "운영자")는 Claude News(<a href="https://claude-news.today">claude-news.today</a>) 서비스를 운영하며, 이용자의 개인정보를 중요하게 생각합니다. 본 방침은 뉴스레터 구독 과정에서 수집되는 개인정보의 처리에 관한 사항을 안내합니다.</p>
+
+    <h2>1. 수집하는 개인정보</h2>
+    <table>
+      <thead>
+        <tr><th>항목</th><th>목적</th><th>보관 기간</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>이메일 주소</td><td>뉴스레터 발송</td><td>구독 해지 시까지</td></tr>
+        <tr><td>언어 선택 (ko/en/ja)</td><td>해당 언어 브리핑 발송</td><td>구독 해지 시까지</td></tr>
+      </tbody>
+    </table>
+
+    <h2>2. 개인정보의 수집 및 이용 목적</h2>
+    <p>수집된 개인정보는 다음 목적으로만 이용됩니다:</p>
+    <ul>
+      <li>Claude Code 관련 AI 뉴스 브리핑 이메일 발송</li>
+      <li>구독 인증(Double Opt-in) 처리</li>
+    </ul>
+
+    <h2>3. 개인정보의 제3자 제공 및 위탁</h2>
+    <p>이메일 발송을 위해 아래 서비스에 처리를 위탁합니다:</p>
+    <table>
+      <thead>
+        <tr><th>수탁자</th><th>소재지</th><th>위탁 업무</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Brevo (Sendinblue)</td><td>프랑스 (EU)</td><td>이메일 발송 및 구독자 관리</td></tr>
+      </tbody>
+    </table>
+    <p>Brevo는 GDPR을 준수하며, 위탁된 개인정보는 뉴스레터 발송 목적으로만 사용됩니다.</p>
+
+    <h2>4. 쿠키 및 분석/광고 도구</h2>
+    <p>본 사이트는 서비스 개선, 이용 통계 분석, 광고 운영을 위해 다음 도구를 사용하거나 향후 사용할 수 있습니다.</p>
+    <table>
+      <thead>
+        <tr><th>도구</th><th>수집 정보</th><th>목적</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Google Analytics 4</td><td>페이지 방문 기록, 브라우저 정보, 대략적 위치</td><td>이용 통계 분석</td></tr>
+        <tr><td>광고 플랫폼 (Google Ads 등)</td><td>쿠키 기반 관심사, 방문 이력</td><td>맞춤형 광고 제공 및 광고 효과 측정</td></tr>
+      </tbody>
+    </table>
+    <p>이러한 도구는 쿠키를 사용하여 이용 데이터를 수집합니다. 브라우저 설정에서 쿠키를 비활성화하거나 삭제할 수 있으며, 이 경우 일부 기능이 제한될 수 있습니다. 각 도구의 데이터 처리에 대한 자세한 내용은 <a href="https://policies.google.com/privacy" target="_blank">Google 개인정보처리방침</a>을 참조하세요.</p>
+
+    <h2>5. 개인정보 처리의 법적 근거</h2>
+    <ul>
+      <li><strong>뉴스레터 구독</strong>: 이용자의 동의 (개인정보보호법 제15조, GDPR 제6조 1항 (a))</li>
+      <li><strong>이용 통계 분석</strong>: 서비스 운영의 정당한 이익 (GDPR 제6조 1항 (f))</li>
+    </ul>
+
+    <h2>6. 이용자의 권리</h2>
+    <ul>
+      <li><strong>구독 해지</strong>: 수신한 이메일 하단의 "Unsubscribe" 링크를 통해 언제든 해지할 수 있습니다.</li>
+      <li><strong>개인정보 삭제 요청</strong>: <a href="mailto:privacy@claude-news.today">privacy@claude-news.today</a>로 삭제를 요청할 수 있습니다.</li>
+      <li><strong>열람 및 정정 요청</strong>: 동일한 이메일로 요청하실 수 있습니다.</li>
+    </ul>
+
+    <h2>7. 개인정보의 파기</h2>
+    <p>구독 해지 시 해당 이메일 주소는 Brevo 시스템에서 삭제 처리됩니다. 별도의 삭제 요청 시 지체 없이 파기합니다.</p>
+
+    <h2>8. 개인정보 보호책임자</h2>
+    <ul>
+      <li>운영자: OTTFStudio</li>
+      <li>연락처: <a href="mailto:privacy@claude-news.today">privacy@claude-news.today</a></li>
+    </ul>
+
+    <h2>9. 방침 변경</h2>
+    <p>본 방침이 변경될 경우 웹사이트를 통해 공지합니다.</p>
+
+    <p class="back"><a href="/">&larr; Claude News로 돌아가기</a></p>
+  </div>
+</BaseLayout>
+
+<style>
+  .privacy {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+  .effective {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+  }
+  .back {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+</style>
