@@ -99,6 +99,10 @@ const { title, description, lang = 'ko', slug, showSidebar = true } = Astro.prop
     padding: 8px 12px;
     border: 1px solid rgba(255,255,255,0.1);
     text-align: left;
+    white-space: nowrap;
+  }
+  td:last-child {
+    white-space: normal;
   }
   th { background: rgba(167,139,250,0.08); color: #fff; font-weight: 600; }
   tr:hover { background: rgba(255,255,255,0.02); }
