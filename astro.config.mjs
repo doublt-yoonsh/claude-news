@@ -13,6 +13,10 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
+      filter: (page) =>
+        !page.endsWith('/en/') &&
+        !page.endsWith('/ja/') &&
+        !page.includes('/subscribed'),
       i18n: {
         defaultLocale: 'ko',
         locales: {
