@@ -24,35 +24,83 @@ for (const post of posts) {
 }
 
 const prefix = lang === 'ko' ? '' : `/${lang}`;
+
+
+// Find which month contains the active post
+const activeMonth = (() => {
+  if (!currentSlug) return [...grouped.keys()][0] || '';
+  for (const [month, items] of grouped) {
+    if (items.some(p => p.id === currentSlug)) return month;
+  }
+  return [...grouped.keys()][0] || '';
+})();
 ---
 
 <aside class="sidebar">
   <div class="sidebar-header">
     <a href={prefix || '/'} class="site-title">Claude Code Daily Briefing</a>
+    <button class="nav-toggle" aria-label="Toggle date list" aria-expanded="false">
+      <span class="toggle-icon">▼</span> Dates
+    </button>
   </div>
-  <LangSwitcher currentLang={lang} slug={currentSlug} />
-  <Search />
-  <nav class="sidebar-nav">
-    {[...grouped.entries()].map(([month, items]) => (
-      <div class="month-group">
-        <div class="month-label">{month}</div>
-        <ul>
-          {items.map(post => {
-            const d = new Date(post.data.date);
-            const shortDate = `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-            const href = `${prefix}/briefings/${post.id}/`;
-            const isActive = post.id === currentSlug;
-            return (
-              <li>
-                <a href={href} class:list={[{ active: isActive }]}>{shortDate}</a>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    ))}
-  </nav>
+  <div class="sidebar-collapsible collapsed">
+    <LangSwitcher currentLang={lang} slug={currentSlug} />
+    <Search />
+    <nav class="sidebar-nav">
+      {[...grouped.entries()].map(([month, items]) => {
+        const isActiveMonth = month === activeMonth;
+        return (
+          <div class:list={['month-group', { open: isActiveMonth }]}>
+            <button class="month-label" aria-expanded={isActiveMonth ? 'true' : 'false'}>
+              <span class="month-arrow">{isActiveMonth ? '▾' : '▸'}</span>
+              {month}
+            </button>
+            <ul class="month-list" style={isActiveMonth ? '' : 'display:none'}>
+              {items.map(post => {
+                const d = new Date(post.data.date);
+                const shortDate = `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                const href = `${prefix}/briefings/${post.id}/`;
+                const isActive = post.id === currentSlug;
+                return (
+                  <li>
+                    <a href={href} class:list={[{ active: isActive }]}>{shortDate}</a>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        );
+      })}
+    </nav>
+  </div>
 </aside>
+
+<script>
+  // Mobile nav toggle
+  const toggle = document.querySelector('.nav-toggle') as HTMLButtonElement;
+  const collapsible = document.querySelector('.sidebar-collapsible') as HTMLElement;
+  toggle?.addEventListener('click', () => {
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    collapsible.classList.toggle('collapsed');
+    const icon = toggle.querySelector('.toggle-icon');
+    if (icon) icon.textContent = expanded ? '▼' : '▲';
+  });
+
+  // Month group accordion
+  document.querySelectorAll('.month-label').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const group = btn.parentElement!;
+      const list = group.querySelector('.month-list') as HTMLElement;
+      const arrow = btn.querySelector('.month-arrow') as HTMLElement;
+      const isOpen = group.classList.contains('open');
+      group.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(!isOpen));
+      if (list) list.style.display = isOpen ? 'none' : '';
+      if (arrow) arrow.textContent = isOpen ? '▸' : '▾';
+    });
+  });
+</script>
 
 <style>
   .sidebar {
@@ -67,19 +115,49 @@ const prefix = lang === 'ko' ? '' : `/${lang}`;
     padding: 16px;
     z-index: 100;
   }
-  .sidebar-header { padding: 8px 0 12px; }
+  .sidebar-header {
+    padding: 8px 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
   .site-title {
     color: #fff;
     font-size: 15px;
     font-weight: 700;
     text-decoration: none;
   }
+  .nav-toggle {
+    display: none;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #94a3b8;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .nav-toggle:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  .toggle-icon { font-size: 10px; }
   .month-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    background: none;
+    border: none;
     color: #94a3b8;
     font-size: 13px;
     font-weight: 700;
     margin: 12px 0 4px;
+    padding: 2px 0;
+    cursor: pointer;
+    text-align: left;
   }
+  .month-label:hover { color: #cbd5e1; }
+  .month-arrow { font-size: 11px; width: 12px; }
   ul { list-style: none; padding: 0; margin: 0; }
   li a {
     display: block;
@@ -99,5 +177,7 @@ const prefix = lang === 'ko' ? '' : `/${lang}`;
       border-right: none;
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
+    .nav-toggle { display: flex; }
+    .sidebar-collapsible.collapsed { display: none; }
   }
 </style>
