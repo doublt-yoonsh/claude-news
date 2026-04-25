@@ -8,15 +8,17 @@ interface Props {
   lang?: string;
   slug?: string;
   showSidebar?: boolean;
+  pubDate?: Date;
+  isArticle?: boolean;
 }
 
-const { title, description, lang = 'ko', slug, showSidebar = true } = Astro.props;
+const { title, description, lang = 'ko', slug, showSidebar = true, pubDate, isArticle = false } = Astro.props;
 ---
 
 <!DOCTYPE html>
 <html lang={lang}>
 <head>
-  <Head title={title} description={description} lang={lang} slug={slug} />
+  <Head title={title} description={description} lang={lang} slug={slug} pubDate={pubDate} isArticle={isArticle} />
 </head>
 <body>
   {showSidebar && <Sidebar lang={lang} currentSlug={slug} />}

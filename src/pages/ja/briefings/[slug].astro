@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Pagination from '../../../components/Pagination.astro';
 import Subscribe from '../../../components/Subscribe.astro';
+import { extractDescription } from '../../../utils/seo';
 
 export async function getStaticPaths() {
   const posts = await getCollection('ja');
@@ -20,9 +21,17 @@ export async function getStaticPaths() {
 
 const { post, prevPost, nextPost } = Astro.props;
 const { Content } = await render(post);
+const description = extractDescription(post.body ?? '') ?? undefined;
 ---
 
-<BaseLayout title={post.data.title} lang="ja" slug={post.id}>
+<BaseLayout
+  title={post.data.title}
+  lang="ja"
+  slug={post.id}
+  description={description}
+  pubDate={post.data.date}
+  isArticle={true}
+>
   <article>
     <Content />
   </article>
